@@ -1,0 +1,99 @@
+# Ignore Rider project files
+.idea/
+*.sln.iml
+
+# Rider-specific caches
+.idea/**/workspace.xml
+.idea/**/tasks.xml
+.idea/**/dictionaries
+.idea/**/shelf/
+.idea/**/httpRequests/
+
+# User-specific Rider files
+.idea/**/usage.statistics.xml
+.idea/**/contentModel.xml
+
+# Rider plugins
+.idea/**/dataSources/
+.idea/**/dataSources.ids
+.idea/**/dataSources.local.xml
+.idea/**/sqlDataSources.xml
+.idea/**/dynamic.xml
+.idea/**/uiDesigner.xml
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Build results
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+# Visual Studio / MSBuild files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# NuGet packages
+*.nupkg
+*.snupkg
+*.nuspec
+*.psmdcp
+*.ncrunchsolution
+project.lock.json
+artifacts/
+packages/
+*.nuget.props
+*.nuget.targets
+
+# Auto-generated files
+Generated_Code/
+
+# Coverage and testing
+*.coverage
+*.coveragexml
+*.testresults
+TestResults/
+*.vsp
+*.vspx
+*.sap
+
+# Debug and crash logs
+*.pidb
+*.svclog
+*.scc
+*.ilk
+*.pdb
+*.mdb
+
+# Other cache
+_ReSharper*/
+*.resharper
+*.DotSettings.user
+
+# Rider plugin caches
+.idea/**/gradle.xml
+.idea/**/libraries
+.gradle/
+build/
+
+# Dotnet stuff
+project.lock.json
+project.fragment.lock.json
+artifacts/
+*.dotCover
+*.VisualState.xml
+
+# Temp
+*.tmp
+*.temp
+*.bak
+*.swp
+*.swo
+
+# Publish
+*.Publish.xml
+publish/
