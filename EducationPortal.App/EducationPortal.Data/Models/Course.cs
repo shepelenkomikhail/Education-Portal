@@ -15,5 +15,5 @@ public class Course
     [StringLength(3000)]
     public string Description { get; set; } = string.Empty;
     public virtual ICollection<Material> Materials { get; set; } = new HashSet<Material>();
-    public virtual ICollection<User> Users { get; set; } = new HashSet<User>();
+    public virtual ICollection<UserCourse> UserCourses { get; set; } = new HashSet<UserCourse>();
 }

@@ -11,5 +11,5 @@ public class Skill
     [Required]
     [StringLength(50)]
     public string Name { get; set; } = string.Empty;
-    public virtual ICollection<User> Users { get; set; } = new HashSet<User>();
+    public virtual ICollection<UserSkill> UserSkills { get; set; } = new HashSet<UserSkill>();
 }

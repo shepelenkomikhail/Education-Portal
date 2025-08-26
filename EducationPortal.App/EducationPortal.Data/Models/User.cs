@@ -22,6 +22,6 @@ public class User
     [StringLength(50)]
     public string Password { get; set; } = string.Empty;
     public string? Phone { get; set; } = string.Empty;
-    public virtual ICollection<Skill> Skills { get; set; } = new HashSet<Skill>();
-    public virtual ICollection<Course> Courses { get; set; } = new HashSet<Course>();
+    public virtual ICollection<UserSkill> UserSkills { get; set; } = new HashSet<UserSkill>();
+    public virtual ICollection<UserCourse> UserCourses { get; set; } = new HashSet<UserCourse>();
 }
