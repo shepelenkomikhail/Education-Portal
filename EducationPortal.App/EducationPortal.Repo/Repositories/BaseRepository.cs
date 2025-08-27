@@ -1,3 +1,4 @@
+using EducationPortal.Data.Models;
 using EducationPortal.Data.Repo.RepositoryInterfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -5,9 +6,9 @@ namespace EducationPortal.Data.Repo.Repositories;
 
 public class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : class
 {
-    protected readonly DbContext context;
+    protected readonly PortalDbContext context;
 
-    public BaseRepository(DbContext context)
+    public BaseRepository(PortalDbContext context)
     {
         this.context = context;
     }
@@ -24,41 +25,20 @@ public class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : 
 
     public bool Insert(TEntity entity)
     {
-        try
-        {
-            context.Set<TEntity>().Add(entity);
-            return true;
-        }
-        catch
-        {
-            return false;
-        }
+        context.Set<TEntity>().Add(entity);
+        return true;
     }
     
     public bool Update(TEntity entity)
     {
-        try
-        {
-            context.Set<TEntity>().Update(entity);
-            return true;
-        }
-        catch
-        {
-            return false;
-        }
+        context.Set<TEntity>().Update(entity);
+        return true;
     }
     
     public bool Delete(TEntity entity)
     {
-        try
-        {
-            context.Set<TEntity>().Remove(entity);
-            return true;
-        }
-        catch
-        {
-            return false;
-        }
+        context.Set<TEntity>().Remove(entity);
+        return true;
     }
 
     public bool Delete(int id)
