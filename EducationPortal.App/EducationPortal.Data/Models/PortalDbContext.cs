@@ -1,0 +1,53 @@
+using EducationPortal.Data.Models.EntityConfigurations;
+using Microsoft.EntityFrameworkCore;
+
+namespace EducationPortal.Data.Models;
+
+public class PortalDbContext : DbContext
+{
+    private string connectionString;
+    public virtual DbSet<User> Users { get; set; }
+    public virtual DbSet<Skill> Skills { get; set; }
+    public virtual DbSet<Course> Courses { get; set; }
+    public virtual DbSet<Material> Materials { get; set; }
+    public virtual DbSet<UserCourse> UserCourses { get; set; }
+    public virtual DbSet<UserSkill> UserSkills { get; set; }
+
+    public PortalDbContext(string connectionString)
+    {
+        this.connectionString = connectionString;
+    }
+    
+    public PortalDbContext() { }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        if (!optionsBuilder.IsConfigured)
+        {
+            optionsBuilder
+                .UseLazyLoadingProxies()
+                .UseSqlite(connectionString)
+                .LogTo(Console.WriteLine)
+                .EnableSensitiveDataLogging(true);
+        }
+    }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<Book>().ToTable("Books");
+        modelBuilder.Entity<Video>().ToTable("Videos");
+        modelBuilder.Entity<Article>().ToTable("Articles");
+        
+        modelBuilder.Entity<UserCourse>().HasKey(uc => new { uc.UserId, uc.CourseId });
+        modelBuilder.Entity<UserSkill>().HasKey(uc => new { uc.UserId, uc.SkillId });
+        
+        modelBuilder.ApplyConfiguration(new SkillConfiguration());
+        modelBuilder.ApplyConfiguration(new UserConfiguration());
+        modelBuilder.ApplyConfiguration(new CourseConfiguration());
+        modelBuilder.ApplyConfiguration(new BookConfiguration());
+        modelBuilder.ApplyConfiguration(new VideoConfiguration());
+        modelBuilder.ApplyConfiguration(new ArticleConfiguration());
+        modelBuilder.ApplyConfiguration(new UserCourseConfiguration());
+        modelBuilder.ApplyConfiguration(new UserSkillConfiguration());
+    }
+}

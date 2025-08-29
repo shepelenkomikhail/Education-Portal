@@ -1,10 +1,23 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk.Web">
 
     <PropertyGroup>
         <TargetFramework>net8.0</TargetFramework>
-        <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <UserSecretsId>aspnet-EducationPortal.WebMVC-b05194d6-dac7-4c7d-a77e-9f58821ea97d</UserSecretsId>
     </PropertyGroup>
+
+    <ItemGroup>
+        <None Update="app.db" CopyToOutputDirectory="PreserveNewest" ExcludeFromSingleFile="true"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="8.0.16"/>
+        <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.16"/>
+        <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="8.0.16"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.16"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.16"/>
+    </ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\EducationPortal.Logic\EducationPortal.Logic.csproj" />
