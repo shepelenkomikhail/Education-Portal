@@ -1,7 +1,9 @@
 using EducationPortal.Data.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
+using EducationPortal.Data.Repo.Repositories;
+using EducationPortal.Logic.Interfaces;
+using EducationPortal.Logic.Services;
 
 namespace EducationPortal.WebMVC;
 
@@ -10,8 +12,7 @@ public class Program
     public static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
-
-        // Add services to the container.
+        
         var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ??
                                throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
         builder.Services.AddDbContext<PortalDbContext>(options =>
@@ -21,6 +22,10 @@ public class Program
         builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
             .AddEntityFrameworkStores<PortalDbContext>();
         builder.Services.AddControllersWithViews();
+        
+        builder.Services.AddScoped<PortalDbContext>();
+        builder.Services.AddScoped<CourseRepository>();
+        builder.Services.AddScoped<ICourseService, CourseService>();
 
         var app = builder.Build();
 
@@ -30,7 +35,6 @@ public class Program
             db.Database.Migrate();
         }
         
-        // Configure the HTTP request pipeline.
         if (app.Environment.IsDevelopment())
         {
             app.UseMigrationsEndPoint();
@@ -38,7 +42,6 @@ public class Program
         else
         {
             app.UseExceptionHandler("/Home/Error");
-            // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
             app.UseHsts();
         }
 

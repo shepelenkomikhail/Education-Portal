@@ -1,49 +1,62 @@
+using EducationPortal.Logic.DTOs;
+using EducationPortal.Logic.Interfaces;
+using WebMVC.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebMVC.Controllers
 {
-    public class CourseController : Controller
+    public class CoursesController : Controller
     {
-        // GET: CourseController
+        private readonly ICourseService _courseService;
+
+        public CoursesController(ICourseService courseService)
+        {
+            _courseService = courseService;
+        }
+
+        // GET: CoursesController
         public ActionResult Index()
         {
             return View();
         }
 
-        // GET: CourseController/Details/5
+        // GET: CoursesController/Details/5
         public ActionResult Details(int id)
         {
             return View();
         }
 
-        // GET: CourseController/Create
+        // GET: CoursesController/Create
         public ActionResult Create()
         {
             return View();
         }
 
-        // POST: CourseController/Create
+        // POST: CoursesController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public ActionResult Create(CourseModel model)
         {
-            try
+            if (ModelState.IsValid)
             {
-                return RedirectToAction(nameof(Index));
+                var dto = new CourseDTO { Name = model.Name, Description = model.Description };
+                var result = _courseService.Insert(dto);
+                if (result)
+                {
+                    return RedirectToAction(nameof(Index));
+                }
+                ModelState.AddModelError("", "Failed to add course.");
             }
-            catch
-            {
-                return View();
-            }
+            return View(model);
         }
 
-        // GET: CourseController/Edit/5
+        // GET: CoursesController/Edit/5
         public ActionResult Edit(int id)
         {
             return View();
         }
 
-        // POST: CourseController/Edit/5
+        // POST: CoursesController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Edit(int id, IFormCollection collection)
@@ -58,13 +71,13 @@ namespace WebMVC.Controllers
             }
         }
 
-        // GET: CourseController/Delete/5
+        // GET: CoursesController/Delete/5
         public ActionResult Delete(int id)
         {
             return View();
         }
 
-        // POST: CourseController/Delete/5
+        // POST: CoursesController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Delete(int id, IFormCollection collection)
