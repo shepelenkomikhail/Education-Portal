@@ -1,7 +1,7 @@
 using EducationPortal.Data.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using EducationPortal.WebMVC.Data;
+using System.Linq;
 
 namespace EducationPortal.WebMVC;
 

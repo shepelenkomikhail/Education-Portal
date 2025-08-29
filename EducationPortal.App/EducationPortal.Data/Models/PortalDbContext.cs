@@ -10,27 +10,35 @@ public class PortalDbContext : DbContext
     public virtual DbSet<Skill> Skills { get; set; }
     public virtual DbSet<Course> Courses { get; set; }
     public virtual DbSet<Material> Materials { get; set; }
+    public virtual DbSet<Book> Books { get; set; }
+    public virtual DbSet<Video> Videos { get; set; }
+    public virtual DbSet<Article> Articles { get; set; }
     public virtual DbSet<UserCourse> UserCourses { get; set; }
     public virtual DbSet<UserSkill> UserSkills { get; set; }
 
+    public PortalDbContext() { }
+    
     public PortalDbContext(string connectionString)
     {
         this.connectionString = connectionString;
     }
-    
-    public PortalDbContext() { }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    public PortalDbContext(DbContextOptions<PortalDbContext> options)
+        : base(options)
     {
-        if (!optionsBuilder.IsConfigured)
-        {
-            optionsBuilder
-                .UseLazyLoadingProxies()
-                .UseSqlite(connectionString)
-                .LogTo(Console.WriteLine)
-                .EnableSensitiveDataLogging(true);
-        }
     }
+    
+    // protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    // {
+    //     if (!optionsBuilder.IsConfigured)
+    //     {
+    //         optionsBuilder
+    //             .UseLazyLoadingProxies()
+    //             .UseSqlite("DataSource=EducationPortal.db;Cache=Shared")
+    //             .LogTo(Console.WriteLine)
+    //             .EnableSensitiveDataLogging(true);
+    //     }
+    // }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
