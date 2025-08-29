@@ -1,8 +1,8 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using WebMVC.Models;
+using EducationPortal.WebMVC.Models;
 
-namespace WebMVC.Controllers;
+namespace EducationPortal.WebMVC.Controllers;
 
 public class HomeController : Controller
 {

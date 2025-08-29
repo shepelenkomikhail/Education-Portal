@@ -8,7 +8,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EducationPortal.Logic", "Ed
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EducationPortal.Repo", "EducationPortal.Repo\EducationPortal.Repo.csproj", "{0475586F-7132-4013-9FFA-5F502408BDC7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EducationPortal.WebMVC", "EducationPortal.WebMVC\EducationPortal.WebMVC.csproj", "{074F10EC-A4E6-4167-AC65-42E9FB015D91}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EducationPortal.WebMVC", "EducationPortal.WebMVC\EducationPortal.WebMVC.csproj", "{D0134BF8-C1B1-474B-9324-0EF6752492E0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -32,9 +32,9 @@ Global
 		{0475586F-7132-4013-9FFA-5F502408BDC7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0475586F-7132-4013-9FFA-5F502408BDC7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0475586F-7132-4013-9FFA-5F502408BDC7}.Release|Any CPU.Build.0 = Release|Any CPU
-		{074F10EC-A4E6-4167-AC65-42E9FB015D91}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{074F10EC-A4E6-4167-AC65-42E9FB015D91}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{074F10EC-A4E6-4167-AC65-42E9FB015D91}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{074F10EC-A4E6-4167-AC65-42E9FB015D91}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D0134BF8-C1B1-474B-9324-0EF6752492E0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D0134BF8-C1B1-474B-9324-0EF6752492E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D0134BF8-C1B1-474B-9324-0EF6752492E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D0134BF8-C1B1-474B-9324-0EF6752492E0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

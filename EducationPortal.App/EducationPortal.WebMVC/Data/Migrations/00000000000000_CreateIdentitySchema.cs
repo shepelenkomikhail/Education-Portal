@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace WebMVC.Data.Migrations
+namespace EducationPortal.WebMVC.Data.Migrations
 {
     public partial class CreateIdentitySchema : Migration
     {

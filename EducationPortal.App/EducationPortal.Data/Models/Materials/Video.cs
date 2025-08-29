@@ -6,6 +6,7 @@ public class Video : Material
 {
     [Required]
     public int Duration { get; set; }
+    
     [Required]
     public int Quality { get; set; }
 }

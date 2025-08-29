@@ -4,8 +4,7 @@
         <TargetFramework>net8.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
-        <UserSecretsId>aspnet-WebMVC-d6f55ff7-ddab-4845-81db-9c05e58213dc</UserSecretsId>
-        <RootNamespace>WebMVC</RootNamespace>
+        <UserSecretsId>aspnet-EducationPortal.WebMVC-b05194d6-dac7-4c7d-a77e-9f58821ea97d</UserSecretsId>
     </PropertyGroup>
 
     <ItemGroup>
@@ -18,7 +17,6 @@
         <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="8.0.16"/>
         <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.16"/>
         <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.16"/>
-        <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.7" />
     </ItemGroup>
 
     <ItemGroup>
