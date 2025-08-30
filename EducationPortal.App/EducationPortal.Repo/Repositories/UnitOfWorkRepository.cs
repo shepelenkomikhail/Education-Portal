@@ -8,13 +8,23 @@ public class UnitOfWorkRepository : IUnitOfWorkRepository
 {
     private readonly PortalDbContext context;
     public CourseRepository Courses { get; }
-    // TODO: add other repositories
+    public SkillRepository Skills { get; }
+    public UserRepository Users { get; }
+    public MaterialRepository Materials { get; }
+    public ArticleRepository Articles { get; }
+    public BookRepository Books { get; }
+    public VideoRepository Videos { get; }
     
     public UnitOfWorkRepository(PortalDbContext context)
     {
         this.context = context;
         Courses = new CourseRepository(context);
-        // TODO: add other repositories
+        Skills = new SkillRepository(context);
+        Users = new UserRepository(context);
+        Materials = new MaterialRepository(context);
+        Articles = new ArticleRepository(context);
+        Books = new BookRepository(context);
+        Videos = new VideoRepository(context);
     }
 
     public bool Save()
