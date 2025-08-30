@@ -1,4 +1,4 @@
-@model WebMVC.Models.CourseModel
+@model EducationPortal.WebMVC.Models.CourseCreateViewModel;
 
 @{
     ViewData["Title"] = "Add Course";
@@ -20,7 +20,22 @@
     <button type="submit" class="btn btn-primary">Add Course</button>
 </form>
 
+<h3>Skills</h3>
+<ul>
+@foreach (var skill in Model.Skills)
+{
+    <li>@skill.Name</li>
+}
+</ul>
+
+<h3>Materials</h3>
+<ul>
+@foreach (var material in Model.Materials)
+{
+    <li>@material.Title</li>
+}
+</ul>
+
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }
-

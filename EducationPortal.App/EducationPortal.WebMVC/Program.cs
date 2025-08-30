@@ -26,6 +26,7 @@ public class Program
         
         builder.Services.AddScoped<PortalDbContext>();
 
+        builder.Services.AddScoped<UnitOfWorkRepository>();
         builder.Services.AddScoped<IUnitOfWorkRepository, UnitOfWorkRepository>();
         builder.Services.AddScoped<ICourseRepository, CourseRepository>();
         builder.Services.AddScoped<IUserRepository, UserRepository>();

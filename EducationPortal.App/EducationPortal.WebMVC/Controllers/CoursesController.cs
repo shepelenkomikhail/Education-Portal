@@ -1,5 +1,6 @@
 using EducationPortal.Logic.DTOs;
 using EducationPortal.Logic.Interfaces;
+using EducationPortal.WebMVC.Models;
 using WebMVC.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -21,8 +22,6 @@ namespace WebMVC.Controllers
         // GET: CoursesController
         public ActionResult Index()
         {
-            // var skills = skillService.GetAll();
-            // var materials = materialService.GetAll();
             return View();
         }
 
@@ -35,8 +34,19 @@ namespace WebMVC.Controllers
         // GET: CoursesController/Create
         public ActionResult Create()
         {
+            var skills = skillService.GetAll();
+            var skillModels = skills.Select(s => new SkillModel() { Id = s.Id, Name = s.Name });
             
-            return View();
+            var materials = materialService.GetAll();
+            var materialModels = materials.Select(m => new MaterialModel() { Id = m.Id, Title = m.Title });
+            
+            var viewModel = new CourseCreateViewModel
+            {
+                Skills = skillModels.ToList(),
+                Materials = materialModels.ToList()
+            };
+            
+            return View(viewModel);
         }
 
         // POST: CoursesController/Create
