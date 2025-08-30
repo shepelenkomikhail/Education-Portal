@@ -7,16 +7,22 @@ namespace WebMVC.Controllers
 {
     public class CoursesController : Controller
     {
-        private readonly ICourseService _courseService;
+        private readonly ICourseService courseService;
+        private readonly ISkillService skillService;
+        private readonly IMaterialService materialService;
 
-        public CoursesController(ICourseService courseService)
+        public CoursesController(ICourseService courseService, IMaterialService materialService, ISkillService skillService)
         {
-            _courseService = courseService;
+            this.courseService = courseService;
+            this.materialService = materialService;
+            this.skillService = skillService;
         }
 
         // GET: CoursesController
         public ActionResult Index()
         {
+            // var skills = skillService.GetAll();
+            // var materials = materialService.GetAll();
             return View();
         }
 
@@ -29,6 +35,7 @@ namespace WebMVC.Controllers
         // GET: CoursesController/Create
         public ActionResult Create()
         {
+            
             return View();
         }
 
@@ -40,7 +47,7 @@ namespace WebMVC.Controllers
             if (ModelState.IsValid)
             {
                 var dto = new CourseDTO { Name = model.Name, Description = model.Description };
-                var result = _courseService.Insert(dto);
+                var result = courseService.Insert(dto);
                 if (result)
                 {
                     return RedirectToAction(nameof(Index));
