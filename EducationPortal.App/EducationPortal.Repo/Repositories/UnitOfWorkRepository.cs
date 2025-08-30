@@ -8,11 +8,13 @@ public class UnitOfWorkRepository : IUnitOfWorkRepository
 {
     private readonly PortalDbContext context;
     public CourseRepository Courses { get; }
-
+    // TODO: add other repositories
+    
     public UnitOfWorkRepository(PortalDbContext context)
     {
         this.context = context;
         Courses = new CourseRepository(context);
+        // TODO: add other repositories
     }
 
     public bool Save()
@@ -20,7 +22,7 @@ public class UnitOfWorkRepository : IUnitOfWorkRepository
         try
         {
             context.SaveChanges();
-            return true;
+            return true; 
         }
         catch (DbUpdateException ex)
         {

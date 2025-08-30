@@ -7,40 +7,40 @@ namespace EducationPortal.Logic.Services;
 
 public class CourseService : ICourseService
 {
-    private readonly CourseRepository courseRepository;
+    private readonly UnitOfWorkRepository unitOfWorkRepository;
     
-    public CourseService(CourseRepository courseRepository)
+    public CourseService(UnitOfWorkRepository unitOfWorkRepository)
     {
-        this.courseRepository = courseRepository;
+        this.unitOfWorkRepository = unitOfWorkRepository;
     }
     
     public bool Insert(CourseDTO course)
     {
-        return courseRepository.Insert(
+        return unitOfWorkRepository.Courses.Insert(
             new Course() { Name = course.Name, Description = course.Description });
     }
 
     public bool Update(CourseDTO course)
     {
-        Course? c = courseRepository.GetById(course.Id);
+        Course? c = unitOfWorkRepository.Courses.GetById(course.Id);
         if (c == null) return false;
-        courseRepository.Update(
+        unitOfWorkRepository.Courses.Update(
             new Course() { Name = course.Name, Description = course.Description });
         return true;
     }
 
     public bool Delete(int id)
     {
-        return courseRepository.Delete(id);
+        return unitOfWorkRepository.Courses.Delete(id);
     }
 
     public CourseDTO GetById(int id)
     {
-        return new CourseDTO(courseRepository.GetById(id));
+        return new CourseDTO(unitOfWorkRepository.Courses.GetById(id));
     }
 
     public IEnumerable<CourseDTO> GetAll()
     {
-        return courseRepository.GetAll().Select(c => new CourseDTO(c)).ToList();
+        return unitOfWorkRepository.Courses.GetAll().Select(c => new CourseDTO(c)).ToList();
     }
 }
