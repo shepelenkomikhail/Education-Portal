@@ -5,6 +5,7 @@ using EducationPortal.Data.Repo.Repositories;
 using EducationPortal.Data.Repo.RepositoryInterfaces;
 using EducationPortal.Logic.Interfaces;
 using EducationPortal.Logic.Services;
+using Microsoft.AspNetCore.DataProtection;
 
 namespace EducationPortal.WebMVC;
 
@@ -23,6 +24,10 @@ public class Program
         builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
             .AddEntityFrameworkStores<PortalDbContext>();
         builder.Services.AddControllersWithViews();
+        
+        builder.Services.AddDataProtection()
+            .PersistKeysToDbContext<PortalDbContext>()
+            .SetApplicationName("EducationPortal");
         
         builder.Services.AddScoped<PortalDbContext>();
 
@@ -61,6 +66,7 @@ public class Program
 
         app.UseRouting();
 
+        app.UseAuthentication();
         app.UseAuthorization();
 
         app.MapControllerRoute(
