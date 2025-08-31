@@ -1,9 +1,10 @@
 using EducationPortal.Data.Models.EntityConfigurations;
+using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace EducationPortal.Data.Models;
 
-public class PortalDbContext : DbContext
+public class PortalDbContext : DbContext, IDataProtectionKeyContext
 {
     private string connectionString;
     public virtual DbSet<User> Users { get; set; }
@@ -15,6 +16,8 @@ public class PortalDbContext : DbContext
     public virtual DbSet<Article> Articles { get; set; }
     public virtual DbSet<UserCourse> UserCourses { get; set; }
     public virtual DbSet<UserSkill> UserSkills { get; set; }
+    public virtual DbSet<CourseSkill> CourseSkills { get; set; }
+    public virtual DbSet<CourseMaterial> CourseMaterials { get; set; }
 
     public PortalDbContext() { }
     
@@ -28,17 +31,19 @@ public class PortalDbContext : DbContext
     {
     }
     
-    // protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    // {
-    //     if (!optionsBuilder.IsConfigured)
-    //     {
-    //         optionsBuilder
-    //             .UseLazyLoadingProxies()
-    //             .UseSqlite("DataSource=EducationPortal.db;Cache=Shared")
-    //             .LogTo(Console.WriteLine)
-    //             .EnableSensitiveDataLogging(true);
-    //     }
-    // }
+    public DbSet<DataProtectionKey> DataProtectionKeys { get; set; }
+    
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        if (!optionsBuilder.IsConfigured)
+        {
+            optionsBuilder
+                .UseLazyLoadingProxies()
+                .UseSqlite("DataSource=EducationPortal.db;Cache=Shared")
+                .LogTo(Console.WriteLine)
+                .EnableSensitiveDataLogging(true);
+        }
+    }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -48,6 +53,8 @@ public class PortalDbContext : DbContext
         
         modelBuilder.Entity<UserCourse>().HasKey(uc => new { uc.UserId, uc.CourseId });
         modelBuilder.Entity<UserSkill>().HasKey(uc => new { uc.UserId, uc.SkillId });
+        modelBuilder.Entity<CourseSkill>().HasKey(cs => new { cs.CourseId, cs.SkillId });
+        modelBuilder.Entity<CourseMaterial>().HasKey(cm => new { cm.CourseId, cm.MaterialId });
         
         modelBuilder.ApplyConfiguration(new SkillConfiguration());
         modelBuilder.ApplyConfiguration(new UserConfiguration());

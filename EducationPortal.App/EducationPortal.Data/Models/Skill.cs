@@ -14,4 +14,8 @@ public class Skill
     public string Name { get; set; } = string.Empty;
     
     public virtual ICollection<UserSkill> UserSkills { get; set; } = new HashSet<UserSkill>();
+    public virtual ICollection<Course> Courses { get; set; } = new HashSet<Course>();
+    
+    // Many-to-many relationship collection
+    public virtual ICollection<CourseSkill> CourseSkills { get; set; } = new HashSet<CourseSkill>();
 }
