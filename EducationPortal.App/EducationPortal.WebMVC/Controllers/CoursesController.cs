@@ -36,35 +36,56 @@ namespace WebMVC.Controllers
         {
             var skills = skillService.GetAll();
             var skillModels = skills.Select(s => new SkillModel() { Id = s.Id, Name = s.Name });
-            
             var materials = materialService.GetAll();
             var materialModels = materials.Select(m => new MaterialModel() { Id = m.Id, Title = m.Title });
-            
             var viewModel = new CourseCreateViewModel
             {
                 Skills = skillModels.ToList(),
                 Materials = materialModels.ToList()
             };
-            
             return View(viewModel);
         }
 
         // POST: CoursesController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(CourseModel model)
+        public ActionResult Create(CourseCreateViewModel model)
         {
             if (ModelState.IsValid)
             {
-                var dto = new CourseDTO { Name = model.Name, Description = model.Description };
-                var result = courseService.Insert(dto);
-                if (result)
+                if (model.SelectedSkillIds == null || !model.SelectedSkillIds.Any())
                 {
-                    return RedirectToAction(nameof(Index));
+                    ModelState.AddModelError("SelectedSkillIds", "Please select at least one skill");
                 }
-                ModelState.AddModelError("", "Failed to add course.");
+                
+                if (model.SelectedMaterialIds == null || !model.SelectedMaterialIds.Any())
+                {
+                    ModelState.AddModelError("SelectedMaterialIds", "Please select at least one material");
+                }
+                
+                if (ModelState.IsValid)
+                {
+                    var courseDto = new CourseDTO { Name = model.Name, Description = model.Description };
+                    bool result = courseService.InsertWithRelations(courseDto, model.SelectedSkillIds, model.SelectedMaterialIds);
+                    
+                    if (result)
+                    {
+                        return RedirectToAction(nameof(Index));
+                    }
+                    
+                    ModelState.AddModelError("", "Failed to create course with relationships");
+                }
             }
-            return View(model);
+            
+            var viewModel = new CourseCreateViewModel
+            {
+                Name = model.Name,
+                Description = model.Description,
+                Skills = skillService.GetAll().Select(s => new SkillModel { Id = s.Id, Name = s.Name }).ToList(),
+                Materials = materialService.GetAll().Select(m => new MaterialModel { Id = m.Id, Title = m.Title }).ToList()
+            };
+            
+            return View(viewModel);
         }
 
         // GET: CoursesController/Edit/5

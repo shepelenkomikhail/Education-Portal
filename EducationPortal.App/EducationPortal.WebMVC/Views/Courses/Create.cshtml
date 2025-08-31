@@ -1,41 +1,135 @@
-@model EducationPortal.WebMVC.Models.CourseCreateViewModel;
+@model EducationPortal.WebMVC.Models.CourseCreateViewModel
 
 @{
     ViewData["Title"] = "Add Course";
 }
 
-<h2>Add Course</h2>
+<h2 class="mb-4">Add New Course</h2>
 
-<form asp-action="Create" method="post">
-    <div class="form-group">
-        <label asp-for="Name" class="control-label"></label>
-        <input asp-for="Name" class="form-control" />
+<form asp-action="Create" method="post" enctype="multipart/form-data">
+    @Html.AntiForgeryToken()
+    <div class="form-group mb-3">
+        <label class="form-label fw-bold">Course Image</label>
+        <input type="file" name="CourseImage" class="form-control"/>
+        <small class="text-muted">Click or drop an image here</small>
+    </div>
+
+    <div class="form-group mb-3">
+        <label asp-for="Name" class="form-label fw-bold"></label>
+        <input asp-for="Name" class="form-control" placeholder="Enter course name"/>
         <span asp-validation-for="Name" class="text-danger"></span>
     </div>
-    <div class="form-group">
-        <label asp-for="Description" class="control-label"></label>
-        <textarea asp-for="Description" class="form-control"></textarea>
+
+    <div class="form-group mb-3">
+        <label asp-for="Description" class="form-label fw-bold"></label>
+        <textarea asp-for="Description" class="form-control" rows="4" placeholder="Enter a short description"></textarea>
         <span asp-validation-for="Description" class="text-danger"></span>
     </div>
-    <button type="submit" class="btn btn-primary">Add Course</button>
+
+    <div class="form-group mb-3">
+        <label class="form-label fw-bold">Select Skills</label>
+        <input type="hidden" asp-for="SelectedSkillIds" id="SelectedSkillIds"/>
+
+        <div class="tag-picker border rounded p-2" id="skillsPicker">
+            <div class="tags d-flex flex-wrap gap-2 mb-2"></div>
+            <select class="form-select">
+                <option value="">Choose skill...</option>
+                @foreach (var skill in Model.Skills)
+                {
+                    <option value="@skill.Id">@skill.Name</option>
+                }
+            </select>
+        </div>
+        <span asp-validation-for="SelectedSkillIds" class="text-danger"></span>
+    </div>
+
+    <div class="form-group mb-3">
+        <label class="form-label fw-bold">Select Materials</label>
+
+        <input type="hidden" asp-for="SelectedMaterialIds" id="SelectedMaterialIds"/>
+
+        <div class="tag-picker border rounded p-2" id="materialsPicker">
+            <div class="tags d-flex flex-wrap gap-2 mb-2"></div>
+            <select class="form-select">
+                <option value="">Choose material...</option>
+                @foreach (var material in Model.Materials)
+                {
+                    <option value="@material.Id">@material.Title</option>
+                }
+            </select>
+        </div>
+        <span asp-validation-for="SelectedMaterialIds" class="text-danger"></span>
+    </div>
+
+    <div class="form-group mb-3">
+        <label class="form-label fw-bold">Material Type</label>
+        <div class="form-check">
+            <input type="radio" name="MaterialType" value="Video" class="form-check-input" id="videoType"/>
+            <label for="videoType" class="form-check-label">Video</label>
+        </div>
+        <div class="form-check">
+            <input type="radio" name="MaterialType" value="EBook" class="form-check-input" id="ebookType"/>
+            <label for="ebookType" class="form-check-label">EBook</label>
+        </div>
+        <div class="form-check">
+            <input type="radio" name="MaterialType" value="Article" class="form-check-input" id="articleType"/>
+            <label for="articleType" class="form-check-label">Article</label>
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary mt-3">Add Course</button>
 </form>
-
-<h3>Skills</h3>
-<ul>
-@foreach (var skill in Model.Skills)
-{
-    <li>@skill.Name</li>
-}
-</ul>
-
-<h3>Materials</h3>
-<ul>
-@foreach (var material in Model.Materials)
-{
-    <li>@material.Title</li>
-}
-</ul>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }
+
+<script>
+    function setupTagPicker(pickerId, hiddenInputName) {
+        const picker = document.getElementById(pickerId);
+        const select = picker.querySelector("select");
+        const tagsContainer = picker.querySelector(".tags");
+
+        let selectedIds = new Set();
+
+        select.addEventListener("change", () => {
+            const value = select.value;
+            const text = select.options[select.selectedIndex].text;
+
+            if (value && !selectedIds.has(value)) {
+                selectedIds.add(value);
+                console.log(`[TagPicker:${pickerId}] Added "${text}" (id=${value})`);
+
+                const hidden = document.createElement("input");
+                hidden.type = "hidden";
+                hidden.name = hiddenInputName;
+                hidden.value = value;
+                hidden.dataset.tagValue = value;
+                picker.appendChild(hidden);
+
+                console.log(`[TagPicker:${pickerId}] Hidden input created: name=${hiddenInputName}, value=${value}`);
+
+                const tag = document.createElement("span");
+                tag.className = "badge bg-primary d-flex align-items-center gap-1";
+                tag.innerHTML = `${text} <button type="button" class="btn-close btn-close-white btn-sm"></button>`;
+                
+                tag.querySelector("button").addEventListener("click", () => {
+                    selectedIds.delete(value);
+                    tag.remove();
+                    picker.querySelector(`input[data-tag-value="${value}"]`).remove();
+                    console.log(`[TagPicker:${pickerId}] Removed "${text}" (id=${value})`);
+                });
+
+                tagsContainer.appendChild(tag);
+            }
+
+            select.value = "";
+            console.log(`[TagPicker:${pickerId}] Current selected IDs:`, Array.from(selectedIds));
+        });
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        setupTagPicker("skillsPicker", "SelectedSkillIds");
+        setupTagPicker("materialsPicker", "SelectedMaterialIds");
+    });
+</script>
