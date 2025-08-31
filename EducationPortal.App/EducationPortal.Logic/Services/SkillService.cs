@@ -26,12 +26,15 @@ public class SkillService: ISkillService
         if (c == null) return false;
         unitOfWorkRepository.Skills.Update(
             new Skill() { Name = skill.Name });
+        unitOfWorkRepository.Save();
         return true;
     }
 
     public bool Delete(int id)
     {
-        return unitOfWorkRepository.Skills.Delete(id);
+        unitOfWorkRepository.Skills.Delete(id);
+        unitOfWorkRepository.Save();
+        return true;
     }
 
     public SkillDTO GetById(int id)

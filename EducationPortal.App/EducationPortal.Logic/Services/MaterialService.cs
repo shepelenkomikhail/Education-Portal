@@ -16,7 +16,9 @@ public class MaterialService: IMaterialService
     
     public bool Delete(int id)
     {
-        return unitOfWorkRepository.Materials.Delete(id);
+        unitOfWorkRepository.Materials.Delete(id);
+        unitOfWorkRepository.Save();
+        return true;
     }
 
     public MaterialDTO GetById(int id)
