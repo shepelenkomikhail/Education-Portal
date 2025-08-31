@@ -1,6 +1,7 @@
 using EducationPortal.Data.Models;
 using EducationPortal.Data.Repo.RepositoryInterfaces;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace EducationPortal.Data.Repo.Repositories;
 
@@ -44,5 +45,11 @@ public class UnitOfWorkRepository : IUnitOfWorkRepository
             return false;
         }
     }
+    
+    public IDbContextTransaction BeginTransaction()
+    {
+        return context.Database.BeginTransaction();
+    }
+    
     public void Dispose() => context.Dispose();
 }
