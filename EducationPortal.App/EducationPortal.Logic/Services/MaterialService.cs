@@ -127,6 +127,20 @@ public class MaterialService: IMaterialService
         return null;
     }
 
+    public async Task<MaterialDTO?> GetByTitleAsync(string title)
+    {
+        var book = await unitOfWork.Repository<Book, int>().GetSingleOrDefaultAsync(b => b.Title == title);
+        if (book != null) return new MaterialDTO(book);
+
+        var video = await unitOfWork.Repository<Video, int>().GetSingleOrDefaultAsync(v => v.Title == title);
+        if (video != null) return new MaterialDTO(video);
+
+        var article = await unitOfWork.Repository<Article, int>().GetSingleOrDefaultAsync(a => a.Title == title);
+        if (article != null) return new MaterialDTO(article);
+
+        return null;
+    }
+
     public async Task<IEnumerable<MaterialDTO>> GetAllAsync()
     {
         var allMaterials = new List<MaterialDTO>();

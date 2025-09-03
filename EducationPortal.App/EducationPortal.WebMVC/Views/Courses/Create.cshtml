@@ -42,6 +42,19 @@
     </div>
 
     <div class="form-group mb-3">
+        <label class="form-label fw-bold">Or Create New Skill</label>
+        <div class="row">
+            <div class="col-md-8">
+                <input asp-for="NewSkill.Name" class="form-control" placeholder="Enter new skill name"/>
+                <span asp-validation-for="NewSkill.Name" class="text-danger"></span>
+            </div>
+            <div class="col-md-4">
+                <button type="button" class="btn btn-outline-primary" id="addNewSkill">Add Skill</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group mb-3">
         <label class="form-label fw-bold">Select Materials</label>
         <div class="tag-picker border rounded p-2" id="materialsPicker">
             <div class="tags d-flex flex-wrap gap-2 mb-2"></div>
@@ -57,18 +70,84 @@
     </div>
 
     <div class="form-group mb-3">
-        <label class="form-label fw-bold">Material Type</label>
-        <div class="form-check">
-            <input type="radio" name="MaterialType" value="Video" class="form-check-input" id="videoType"/>
-            <label for="videoType" class="form-check-label">Video</label>
+        <label class="form-label fw-bold">Or Create New Material</label>
+        
+        <div class="mb-3">
+            <label class="form-label">Material Type</label>
+            <div class="form-check">
+                <input type="radio" asp-for="NewMaterial.MaterialType" value="Book" class="form-check-input" id="bookType"/>
+                <label for="bookType" class="form-check-label">Book</label>
+            </div>
+            <div class="form-check">
+                <input type="radio" asp-for="NewMaterial.MaterialType" value="Video" class="form-check-input" id="videoType"/>
+                <label for="videoType" class="form-check-label">Video</label>
+            </div>
+            <div class="form-check">
+                <input type="radio" asp-for="NewMaterial.MaterialType" value="Article" class="form-check-input" id="articleType"/>
+                <label for="articleType" class="form-check-label">Article</label>
+            </div>
         </div>
-        <div class="form-check">
-            <input type="radio" name="MaterialType" value="EBook" class="form-check-input" id="ebookType"/>
-            <label for="ebookType" class="form-check-label">EBook</label>
+
+        <div class="mb-3">
+            <label asp-for="NewMaterial.Title" class="form-label">Material Title</label>
+            <input asp-for="NewMaterial.Title" class="form-control" placeholder="Enter material title"/>
+            <span asp-validation-for="NewMaterial.Title" class="text-danger"></span>
         </div>
-        <div class="form-check">
-            <input type="radio" name="MaterialType" value="Article" class="form-check-input" id="articleType"/>
-            <label for="articleType" class="form-check-label">Article</label>
+
+        <!-- Book Fields -->
+        <div id="bookFields" class="material-type-fields" style="display: none;">
+            <div class="row">
+                <div class="col-md-6">
+                    <label asp-for="NewMaterial.Author" class="form-label">Author</label>
+                    <input asp-for="NewMaterial.Author" class="form-control" placeholder="Enter author name"/>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="NewMaterial.PageAmount" class="form-label">Page Amount</label>
+                    <input asp-for="NewMaterial.PageAmount" type="number" class="form-control" placeholder="Enter page count"/>
+                </div>
+            </div>
+            <div class="row mt-2">
+                <div class="col-md-6">
+                    <label asp-for="NewMaterial.Formant" class="form-label">Format</label>
+                    <input asp-for="NewMaterial.Formant" class="form-control" placeholder="e.g., PDF, EPUB"/>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="NewMaterial.PublicationDate" class="form-label">Publication Date</label>
+                    <input asp-for="NewMaterial.PublicationDate" type="date" class="form-control"/>
+                </div>
+            </div>
+        </div>
+
+        <!-- Video Fields -->
+        <div id="videoFields" class="material-type-fields" style="display: none;">
+            <div class="row">
+                <div class="col-md-6">
+                    <label asp-for="NewMaterial.Duration" class="form-label">Duration (minutes)</label>
+                    <input asp-for="NewMaterial.Duration" type="number" class="form-control" placeholder="Enter duration in minutes"/>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="NewMaterial.Quality" class="form-label">Quality (pixels)</label>
+                    <input asp-for="NewMaterial.Quality" type="number" class="form-control" placeholder="e.g., 1080, 720"/>
+                </div>
+            </div>
+        </div>
+
+        <!-- Article Fields -->
+        <div id="articleFields" class="material-type-fields" style="display: none;">
+            <div class="row">
+                <div class="col-md-6">
+                    <label asp-for="NewMaterial.Date" class="form-label">Publication Date</label>
+                    <input asp-for="NewMaterial.Date" type="date" class="form-control"/>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="NewMaterial.Resource" class="form-label">Resource URL</label>
+                    <input asp-for="NewMaterial.Resource" class="form-control" placeholder="Enter resource URL"/>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-3">
+            <button type="button" class="btn btn-outline-primary" id="addNewMaterial">Add Material</button>
         </div>
     </div>
 
@@ -78,6 +157,27 @@
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }
+
+<style>
+    .material-type-fields {
+        background-color: #f8f9fa;
+        padding: 15px;
+        border-radius: 5px;
+        margin-top: 10px;
+    }
+    
+    .form-group {
+        margin-bottom: 20px;
+    }
+    
+    .tag-picker {
+        min-height: 60px;
+    }
+    
+    .badge {
+        font-size: 0.875em;
+    }
+</style>
 
 <script>
     function setupTagPicker(pickerId, hiddenInputName) {
@@ -126,5 +226,60 @@
     document.addEventListener("DOMContentLoaded", function () {
         setupTagPicker("skillsPicker", "SelectedSkillIds");
         setupTagPicker("materialsPicker", "SelectedMaterialIds");
+        
+        const materialTypeRadios = document.querySelectorAll('input[name="NewMaterial.MaterialType"]');
+        const materialTypeFields = document.querySelectorAll('.material-type-fields');
+        
+        materialTypeRadios.forEach(radio => {
+            radio.addEventListener('change', function() {
+                materialTypeFields.forEach(field => {
+                    field.style.display = 'none';
+                });
+                
+                const selectedType = this.value.toLowerCase();
+                const targetField = document.getElementById(selectedType + 'Fields');
+                if (targetField) {
+                    targetField.style.display = 'block';
+                }
+            });
+        });
+        
+        document.getElementById('addNewSkill').addEventListener('click', function() {
+            const skillName = document.querySelector('input[name="NewSkill.Name"]').value.trim();
+            if (skillName) {
+                const skillsSelect = document.querySelector('#skillsPicker select');
+                const option = document.createElement('option');
+                option.value = 'new_' + skillName;
+                option.textContent = skillName;
+                option.dataset.isNew = 'true';
+                option.dataset.skillName = skillName;
+                skillsSelect.appendChild(option);
+                option.selected = true;
+                skillsSelect.dispatchEvent(new Event('change'));
+                document.querySelector('input[name="NewSkill.Name"]').value = '';
+            }
+        });
+        
+        document.getElementById('addNewMaterial').addEventListener('click', function() {
+            const materialTitle = document.querySelector('input[name="NewMaterial.Title"]').value.trim();
+            const materialType = document.querySelector('input[name="NewMaterial.MaterialType"]:checked')?.value;
+            
+            if (materialTitle && materialType) {
+                const materialsSelect = document.querySelector('#materialsPicker select');
+                const option = document.createElement('option');
+                option.value = 'new_' + materialTitle;
+                option.textContent = materialTitle + ' (' + materialType + ')';
+                option.dataset.isNew = 'true';
+                option.dataset.materialTitle = materialTitle;
+                option.dataset.materialType = materialType;
+                materialsSelect.appendChild(option);
+                option.selected = true;
+                materialsSelect.dispatchEvent(new Event('change'));
+                
+                document.querySelector('input[name="NewMaterial.Title"]').value = '';
+                document.querySelectorAll('input[name="NewMaterial.MaterialType"]').forEach(radio => radio.checked = false);
+                materialTypeFields.forEach(field => field.style.display = 'none');
+            }
+        });
     });
 </script>

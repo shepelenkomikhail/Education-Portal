@@ -43,6 +43,12 @@ public class SkillService: ISkillService
         return skill != null ? new SkillDTO(skill) : null;
     }
 
+    public async Task<SkillDTO?> GetByNameAsync(string name)
+    {
+        var skill = await unitOfWork.Repository<Skill, int>().GetSingleOrDefaultAsync(s => s.Name == name);
+        return skill != null ? new SkillDTO(skill) : null;
+    }
+
     public async Task<IEnumerable<SkillDTO>> GetAllAsync()
     {
         var skills = await unitOfWork.Repository<Skill, int>().GetWhereAsync(s => true);
