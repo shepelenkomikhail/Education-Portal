@@ -4,8 +4,6 @@ namespace EducationPortal.Logic.DTOs;
 
 public class BookDTO : MaterialDTO
 {
-    public int Id { get; set; }
-    public string Title { get; set; } = string.Empty;
     public string Author { get; set; } = string.Empty;
     public int PageAmount { get; set; }
     public string Formant { get; set; } = string.Empty;

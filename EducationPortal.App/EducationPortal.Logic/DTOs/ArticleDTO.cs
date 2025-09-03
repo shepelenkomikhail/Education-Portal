@@ -4,8 +4,6 @@ namespace EducationPortal.Logic.DTOs;
 
 public class ArticleDTO : MaterialDTO
 {
-    public int Id { get; set; }
-    public string Title { get; set; } = string.Empty;
     public DateTime Date { get; set; }
     public string Resource { get; set; } = string.Empty;
     

@@ -4,8 +4,6 @@ namespace EducationPortal.Logic.DTOs;
 
 public class VideoDTO : MaterialDTO
 {
-    public int Id { get; set; }
-    public string Title { get; set; } = string.Empty;
     public int Duration { get; set; }
     public int Quality { get; set; }
     
