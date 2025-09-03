@@ -32,11 +32,11 @@ namespace WebMVC.Controllers
         }
 
         // GET: CoursesController/Create
-        public ActionResult Create()
+        public async Task<ActionResult> Create()
         {
-            var skills = skillService.GetAll();
+            var skills = await skillService.GetAllAsync();
             var skillModels = skills.Select(s => new SkillModel() { Id = s.Id, Name = s.Name });
-            var materials = materialService.GetAll();
+            var materials = await materialService.GetAllAsync();
             var materialModels = materials.Select(m => new MaterialModel() { Id = m.Id, Title = m.Title });
             var viewModel = new CourseCreateViewModel
             {
@@ -49,7 +49,7 @@ namespace WebMVC.Controllers
         // POST: CoursesController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(CourseCreateViewModel model)
+        public async Task<ActionResult> Create(CourseCreateViewModel model)
         {
             if (ModelState.IsValid)
             {
@@ -66,7 +66,7 @@ namespace WebMVC.Controllers
                 if (ModelState.IsValid)
                 {
                     var courseDto = new CourseDTO { Name = model.Name, Description = model.Description };
-                    bool result = courseService.InsertWithRelations(courseDto, model.SelectedSkillIds, model.SelectedMaterialIds);
+                    bool result = await courseService.InsertWithRelationsAsync(courseDto, model.SelectedSkillIds, model.SelectedMaterialIds);
                     
                     if (result)
                     {
@@ -77,12 +77,14 @@ namespace WebMVC.Controllers
                 }
             }
             
+            var skills = await skillService.GetAllAsync();
+            var materials = await materialService.GetAllAsync();
             var viewModel = new CourseCreateViewModel
             {
                 Name = model.Name,
                 Description = model.Description,
-                Skills = skillService.GetAll().Select(s => new SkillModel { Id = s.Id, Name = s.Name }).ToList(),
-                Materials = materialService.GetAll().Select(m => new MaterialModel { Id = m.Id, Title = m.Title }).ToList()
+                Skills = skills.Select(s => new SkillModel { Id = s.Id, Name = s.Name }).ToList(),
+                Materials = materials.Select(m => new MaterialModel { Id = m.Id, Title = m.Title }).ToList()
             };
             
             return View(viewModel);

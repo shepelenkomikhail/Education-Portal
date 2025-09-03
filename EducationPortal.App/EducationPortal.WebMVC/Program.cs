@@ -31,12 +31,9 @@ public class Program
         
         builder.Services.AddScoped<PortalDbContext>();
 
-        builder.Services.AddScoped<UnitOfWorkRepository>();
-        builder.Services.AddScoped<IUnitOfWorkRepository, UnitOfWorkRepository>();
-        builder.Services.AddScoped<ICourseRepository, CourseRepository>();
-        builder.Services.AddScoped<IUserRepository, UserRepository>();
-        builder.Services.AddScoped<IMaterialRepository, MaterialRepository>();
-        builder.Services.AddScoped<ISkillRepository, SkillRepository>();
+        // Register the new generic UnitOfWork pattern
+        builder.Services.AddScoped<IRepositoryFactory, RepositoryFactory>();
+        builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
         builder.Services.AddScoped<ICourseService, CourseService>();
         builder.Services.AddScoped<IUserService, UserService>();

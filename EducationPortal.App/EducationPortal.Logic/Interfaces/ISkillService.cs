@@ -4,10 +4,9 @@ namespace EducationPortal.Logic.Interfaces;
 
 public interface ISkillService
 {
-    bool Insert(SkillDTO skill);
-    bool Update(SkillDTO skill);
-    bool Delete(int id);
-    SkillDTO GetById(int id);
-    IEnumerable<SkillDTO> GetAll(); 
-    // TODO: Add service methods signatures to this service
+    Task<bool> InsertAsync(SkillDTO skill);
+    Task<bool> UpdateAsync(SkillDTO skill);
+    Task<bool> DeleteAsync(int id);
+    Task<SkillDTO?> GetByIdAsync(int id);
+    Task<IEnumerable<SkillDTO>> GetAllAsync();
 }

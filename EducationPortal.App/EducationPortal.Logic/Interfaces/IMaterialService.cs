@@ -4,7 +4,10 @@ namespace EducationPortal.Logic.Interfaces;
 
 public interface IMaterialService
 {
-    MaterialDTO GetById(int id);
-    IEnumerable<MaterialDTO> GetAll();
-    // TODO: Add service methods signatures to this service
+    Task<bool> InsertAsync(MaterialDTO material);
+    Task<bool> UpdateAsync(MaterialDTO material);
+    Task<bool> DeleteAsync(int id);
+    Task<MaterialDTO?> GetByIdAsync(int id);
+    Task<IEnumerable<MaterialDTO>> GetAllAsync();
+    Task<IEnumerable<MaterialDTO>> GetByTypeAsync(string materialType);
 }

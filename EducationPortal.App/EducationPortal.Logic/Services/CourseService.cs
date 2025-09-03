@@ -1,5 +1,5 @@
 using EducationPortal.Data.Models;
-using EducationPortal.Data.Repo.Repositories;
+using EducationPortal.Data.Repo.RepositoryInterfaces;
 using EducationPortal.Logic.DTOs;
 using EducationPortal.Logic.Interfaces;
 using Microsoft.EntityFrameworkCore.Storage;
@@ -8,85 +8,97 @@ namespace EducationPortal.Logic.Services;
 
 public class CourseService : ICourseService
 {
-    private readonly UnitOfWorkRepository unitOfWorkRepository;
+    private readonly IUnitOfWork unitOfWork;
     
-    public CourseService(UnitOfWorkRepository unitOfWorkRepository)
+    public CourseService(IUnitOfWork unitOfWork)
     {
-        this.unitOfWorkRepository = unitOfWorkRepository;
-    }
-    
-    public bool Insert(CourseDTO course)
-    {
-        unitOfWorkRepository.Courses.Insert(
-            new Course() { Name = course.Name, Description = course.Description });
-        unitOfWorkRepository.Save();
-        return true;
-    }
-
-    public bool Update(CourseDTO course)
-    {
-        Course? c = unitOfWorkRepository.Courses.GetById(course.Id);
-        if (c == null) return false;
-        unitOfWorkRepository.Courses.Update(
-            new Course() { Name = course.Name, Description = course.Description });
-        unitOfWorkRepository.Save();
-        return true;
-    }
-
-    public bool Delete(int id)
-    {
-        unitOfWorkRepository.Courses.Delete(id);
-        unitOfWorkRepository.Save();
-        return true;
-    }
-
-    public CourseDTO GetById(int id)
-    {
-        return new CourseDTO(unitOfWorkRepository.Courses.GetById(id));
-    }
-
-    public CourseDTO GetByName(string name)
-    {
-        return new CourseDTO(unitOfWorkRepository.Courses.GetByName(name));
-    }
-
-    public IEnumerable<CourseDTO> GetAll()
-    {
-        return unitOfWorkRepository.Courses.GetAll().Select(c => new CourseDTO(c)).ToList();
-    }
-
-    public bool AddSkillToCourse(int courseId, int skillId)
-    {
-        unitOfWorkRepository.Courses.AddSkillToCourse(courseId, skillId);
-        unitOfWorkRepository.Save();
-        return true;
-    }
-
-    public bool AddMaterialToCourse(int courseId, int materialId)
-    {
-        unitOfWorkRepository.Courses.AddMaterialToCourse(courseId, materialId);
-        unitOfWorkRepository.Save();
-        return true;
+        this.unitOfWork = unitOfWork;
     }
     
-    public bool InsertWithRelations(CourseDTO course, List<int> skillIds, List<int> materialIds)
+    public async Task<bool> InsertAsync(CourseDTO course)
     {
-        using var transaction = unitOfWorkRepository.BeginTransaction();
+        var courseEntity = new Course() { Name = course.Name, Description = course.Description };
+        await unitOfWork.Repository<Course, int>().InsertAsync(courseEntity);
+        return await unitOfWork.SaveAsync();
+    }
+
+    public async Task<bool> UpdateAsync(CourseDTO course)
+    {
+        var existingCourse = await unitOfWork.Repository<Course, int>().GetByIdAsync(course.Id);
+        if (existingCourse == null) return false;
+        
+        existingCourse.Name = course.Name;
+        existingCourse.Description = course.Description;
+        await unitOfWork.Repository<Course, int>().UpdateAsync(existingCourse);
+        return await unitOfWork.SaveAsync();
+    }
+
+    public async Task<bool> DeleteAsync(int id)
+    {
+        await unitOfWork.Repository<Course, int>().DeleteAsync(id);
+        return await unitOfWork.SaveAsync();
+    }
+
+    public async Task<CourseDTO?> GetByIdAsync(int id)
+    {
+        var course = await unitOfWork.Repository<Course, int>().GetByIdAsync(id);
+        return course != null ? new CourseDTO(course) : null;
+    }
+
+    public async Task<CourseDTO?> GetByNameAsync(string name)
+    {
+        var course = await unitOfWork.Repository<Course, int>().GetSingleOrDefaultAsync(c => c.Name == name);
+        return course != null ? new CourseDTO(course) : null;
+    }
+
+    public async Task<IEnumerable<CourseDTO>> GetAllAsync()
+    {
+        var courses = await unitOfWork.Repository<Course, int>().GetWhereAsync(c => true);
+        return courses.Select(c => new CourseDTO(c)).ToList();
+    }
+
+    public async Task<bool> AddSkillToCourseAsync(int courseId, int skillId)
+    {
+        var course = await unitOfWork.Repository<Course, int>().GetByIdAsync(courseId);
+        var skill = await unitOfWork.Repository<Skill, int>().GetByIdAsync(skillId);
+        
+        if (course == null || skill == null) return false;
+
+        course.Skills.Add(skill);
+        await unitOfWork.Repository<Course, int>().UpdateAsync(course);
+        return await unitOfWork.SaveAsync();
+    }
+
+    public async Task<bool> AddMaterialToCourseAsync(int courseId, int materialId)
+    {
+        var course = await unitOfWork.Repository<Course, int>().GetByIdAsync(courseId);
+        var material = await unitOfWork.Repository<Material, int>().GetByIdAsync(materialId);
+        
+        if (course == null || material == null) return false;
+
+        course.Materials.Add(material);
+        await unitOfWork.Repository<Course, int>().UpdateAsync(course);
+        return await unitOfWork.SaveAsync();
+    }
+    
+    public async Task<bool> InsertWithRelationsAsync(CourseDTO course, List<int> skillIds, List<int> materialIds)
+    {
+        using var transaction = unitOfWork.BeginTransaction();
         try
         {
             var newCourse = new Course { Name = course.Name, Description = course.Description };
-            unitOfWorkRepository.Courses.Insert(newCourse);
-            unitOfWorkRepository.Save();
+            await unitOfWork.Repository<Course, int>().InsertAsync(newCourse);
+            await unitOfWork.SaveAsync();
             
             foreach (var skillId in skillIds)
             {
-                if (!AddSkillToCourse(newCourse.Id, skillId))
+                if (!await AddSkillToCourseAsync(newCourse.Id, skillId))
                     throw new Exception($"Failed to add skill {skillId}");
             }
             
             foreach (var materialId in materialIds)
             {
-                if (!AddMaterialToCourse(newCourse.Id, materialId))
+                if (!await AddMaterialToCourseAsync(newCourse.Id, materialId))
                     throw new Exception($"Failed to add material {materialId}");
             }
             
@@ -99,5 +111,4 @@ public class CourseService : ICourseService
             return false;
         }
     }
-    // TODO: Add service methods signatures to this service
 }

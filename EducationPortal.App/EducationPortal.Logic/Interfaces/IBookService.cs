@@ -1,6 +1,13 @@
+using EducationPortal.Logic.DTOs;
+
 namespace EducationPortal.Logic.Interfaces;
 
 public interface IBookService
 {
-    // TODO: Add service methods signatures to this service
+    Task<bool> InsertAsync(BookDTO book);
+    Task<bool> UpdateAsync(BookDTO book);
+    Task<bool> DeleteAsync(int id);
+    Task<BookDTO?> GetByIdAsync(int id);
+    Task<IEnumerable<BookDTO>> GetAllAsync();
+    Task<IEnumerable<BookDTO>> GetByAuthorAsync(string author);
 }

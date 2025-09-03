@@ -1,5 +1,5 @@
 using EducationPortal.Data.Models;
-using EducationPortal.Data.Repo.Repositories;
+using EducationPortal.Data.Repo.RepositoryInterfaces;
 using EducationPortal.Logic.DTOs;
 using EducationPortal.Logic.Interfaces;
 
@@ -7,44 +7,47 @@ namespace EducationPortal.Logic.Services;
 
 public class SkillService: ISkillService
 {
-    private readonly UnitOfWorkRepository unitOfWorkRepository;
+    private readonly IUnitOfWork unitOfWork;
     
-    public SkillService(UnitOfWorkRepository unitOfWorkRepository)
+    public SkillService(IUnitOfWork unitOfWork)
     {
-        this.unitOfWorkRepository = unitOfWorkRepository;
+        this.unitOfWork = unitOfWork;
     }
     
-    public bool Insert(SkillDTO skill)
+    public async Task<bool> InsertAsync(SkillDTO skill)
     {
-        return unitOfWorkRepository.Skills.Insert(
-            new Skill() { Name = skill.Name });
+        var skillEntity = new Skill() { Name = skill.Name };
+        await unitOfWork.Repository<Skill, int>().InsertAsync(skillEntity);
+        return await unitOfWork.SaveAsync();
     }
 
-    public bool Update(SkillDTO skill)
+    public async Task<bool> UpdateAsync(SkillDTO skill)
     {
-        Skill? c = unitOfWorkRepository.Skills.GetById(skill.Id);
-        if (c == null) return false;
-        unitOfWorkRepository.Skills.Update(
-            new Skill() { Name = skill.Name });
-        unitOfWorkRepository.Save();
-        return true;
+        var existingSkill = await unitOfWork.Repository<Skill, int>().GetByIdAsync(skill.Id);
+        if (existingSkill == null) return false;
+        
+        existingSkill.Name = skill.Name;
+        await unitOfWork.Repository<Skill, int>().UpdateAsync(existingSkill);
+        return await unitOfWork.SaveAsync();
     }
 
-    public bool Delete(int id)
+    public async Task<bool> DeleteAsync(int id)
     {
-        unitOfWorkRepository.Skills.Delete(id);
-        unitOfWorkRepository.Save();
-        return true;
+        await unitOfWork.Repository<Skill, int>().DeleteAsync(id);
+        return await unitOfWork.SaveAsync();
     }
 
-    public SkillDTO GetById(int id)
+    public async Task<SkillDTO?> GetByIdAsync(int id)
     {
-        return new SkillDTO(unitOfWorkRepository.Skills.GetById(id));
+        var skill = await unitOfWork.Repository<Skill, int>().GetByIdAsync(id);
+        return skill != null ? new SkillDTO(skill) : null;
     }
 
-    public IEnumerable<SkillDTO> GetAll()
+    public async Task<IEnumerable<SkillDTO>> GetAllAsync()
     {
-        return unitOfWorkRepository.Skills.GetAll().Select(c => new SkillDTO(c)).ToList();
+        var skills = await unitOfWork.Repository<Skill, int>().GetWhereAsync(s => true);
+        return skills.Select(s => new SkillDTO(s)).ToList();
     }
-    // TODO: Add service methods specific to this service
+
+
 }
