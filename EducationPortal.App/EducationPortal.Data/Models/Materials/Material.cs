@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EducationPortal.Data.Models;
 
-public abstract class Material
+public abstract class Material : BaseEntity<int>
 {
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]

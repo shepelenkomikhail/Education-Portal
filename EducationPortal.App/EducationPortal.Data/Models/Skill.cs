@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EducationPortal.Data.Models;
 
-public class Skill
+public class Skill : BaseEntity<int>
 {
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -16,6 +16,5 @@ public class Skill
     public virtual ICollection<UserSkill> UserSkills { get; set; } = new HashSet<UserSkill>();
     public virtual ICollection<Course> Courses { get; set; } = new HashSet<Course>();
     
-    // Many-to-many relationship collection
     public virtual ICollection<CourseSkill> CourseSkills { get; set; } = new HashSet<CourseSkill>();
 }
