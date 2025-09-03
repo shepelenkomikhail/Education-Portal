@@ -2,7 +2,7 @@ using EducationPortal.Data.Models;
 
 namespace EducationPortal.Logic.DTOs;
 
-public class VideoDTO
+public class VideoDTO : MaterialDTO
 {
     public int Id { get; set; }
     public string Title { get; set; } = string.Empty;

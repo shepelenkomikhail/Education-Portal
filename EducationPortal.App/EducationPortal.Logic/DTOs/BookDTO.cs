@@ -2,7 +2,7 @@ using EducationPortal.Data.Models;
 
 namespace EducationPortal.Logic.DTOs;
 
-public class BookDTO
+public class BookDTO : MaterialDTO
 {
     public int Id { get; set; }
     public string Title { get; set; } = string.Empty;
