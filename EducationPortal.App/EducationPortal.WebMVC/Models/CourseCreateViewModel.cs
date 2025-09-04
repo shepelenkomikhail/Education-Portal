@@ -22,6 +22,6 @@ public class CourseCreateViewModel
     [Required(ErrorMessage = "Please select at least one material")]
     public List<int> SelectedMaterialIds { get; set; } = new();
     
-    public NewSkillModel NewSkill { get; set; } = new();
-    public NewMaterialModel NewMaterial { get; set; } = new();
+    public List<NewSkillModel> NewSkills { get; set; } = new();
+    public List<NewMaterialModel> NewMaterials { get; set; } = new();
 }

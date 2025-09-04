@@ -54,32 +54,44 @@ namespace WebMVC.Controllers
             var selectedSkillIds = new List<int>(model.SelectedSkillIds ?? new List<int>());
             var selectedMaterialIds = new List<int>(model.SelectedMaterialIds ?? new List<int>());
             
-            if (!string.IsNullOrWhiteSpace(model.NewSkill?.Name))
+            if (model.NewSkills != null)
             {
-                var skillDto = new SkillDTO { Name = model.NewSkill.Name };
-                var skillCreated = await skillService.InsertAsync(skillDto);
-                if (skillCreated)
+                foreach (var newSkill in model.NewSkills)
                 {
-                    var newSkill = await skillService.GetByNameAsync(model.NewSkill.Name);
-                    if (newSkill != null)
+                    if (!string.IsNullOrWhiteSpace(newSkill?.Name))
                     {
-                        selectedSkillIds.Add(newSkill.Id);
+                        var skillDto = new SkillDTO { Name = newSkill.Name };
+                        var skillCreated = await skillService.InsertAsync(skillDto);
+                        if (skillCreated)
+                        {
+                            var createdSkill = await skillService.GetByNameAsync(newSkill.Name);
+                            if (createdSkill != null)
+                            {
+                                selectedSkillIds.Add(createdSkill.Id);
+                            }
+                        }
                     }
                 }
             }
-
-            if (!string.IsNullOrWhiteSpace(model.NewMaterial?.Title) && !string.IsNullOrWhiteSpace(model.NewMaterial?.MaterialType))
+            
+            if (model.NewMaterials != null)
             {
-                var materialDto = CreateMaterialDto(model.NewMaterial);
-                if (materialDto != null)
+                foreach (var newMaterial in model.NewMaterials)
                 {
-                    var materialCreated = await materialService.InsertAsync(materialDto);
-                    if (materialCreated)
+                    if (!string.IsNullOrWhiteSpace(newMaterial?.Title) && !string.IsNullOrWhiteSpace(newMaterial?.MaterialType))
                     {
-                        var newMaterial = await materialService.GetByTitleAsync(model.NewMaterial.Title);
-                        if (newMaterial != null)
+                        var materialDto = CreateMaterialDto(newMaterial);
+                        if (materialDto != null)
                         {
-                            selectedMaterialIds.Add(newMaterial.Id);
+                            var materialCreated = await materialService.InsertAsync(materialDto);
+                            if (materialCreated)
+                            {
+                                var createdMaterial = await materialService.GetByTitleAsync(newMaterial.Title);
+                                if (createdMaterial != null)
+                                {
+                                    selectedMaterialIds.Add(createdMaterial.Id);
+                                }
+                            }
                         }
                     }
                 }
@@ -113,19 +125,22 @@ namespace WebMVC.Controllers
                 Description = model.Description,
                 Skills = skills.Select(s => new SkillModel { Id = s.Id, Name = s.Name }).ToList(),
                 Materials = materials.Select(m => new MaterialModel { Id = m.Id, Title = m.Title }).ToList(),
-                NewSkill = model.NewSkill,
-                NewMaterial = model.NewMaterial
+                NewSkills = model.NewSkills ?? new List<NewSkillModel>(),
+                NewMaterials = model.NewMaterials ?? new List<NewMaterialModel>()
             };
             return View(viewModel);
         }
 
         private MaterialDTO? CreateMaterialDto(NewMaterialModel newMaterial)
         {
+            if (string.IsNullOrWhiteSpace(newMaterial.MaterialType) || string.IsNullOrWhiteSpace(newMaterial.Title))
+                return null;
+                
             return newMaterial.MaterialType.ToLower() switch
             {
                 "book" => new BookDTO
                 {
-                    Title = newMaterial.Title,
+                    Title = newMaterial.Title ?? string.Empty,
                     Author = newMaterial.Author ?? string.Empty,
                     PageAmount = newMaterial.PageAmount ?? 0,
                     Formant = newMaterial.Formant ?? string.Empty,
@@ -133,13 +148,13 @@ namespace WebMVC.Controllers
                 },
                 "video" => new VideoDTO
                 {
-                    Title = newMaterial.Title,
+                    Title = newMaterial.Title ?? string.Empty,
                     Duration = newMaterial.Duration ?? 0,
                     Quality = newMaterial.Quality ?? 0
                 },
                 "article" => new ArticleDTO
                 {
-                    Title = newMaterial.Title,
+                    Title = newMaterial.Title ?? string.Empty,
                     Date = newMaterial.Date ?? DateTime.Now,
                     Resource = newMaterial.Resource ?? string.Empty
                 },

@@ -42,16 +42,16 @@
     </div>
 
     <div class="form-group mb-3">
-        <label class="form-label fw-bold">Or Create New Skill</label>
+        <label class="form-label fw-bold">Or Create New Skills</label>
         <div class="row">
             <div class="col-md-8">
-                <input asp-for="NewSkill.Name" class="form-control" placeholder="Enter new skill name"/>
-                <span asp-validation-for="NewSkill.Name" class="text-danger"></span>
+                <input type="text" class="form-control" id="newSkillName" placeholder="Enter new skill name"/>
             </div>
             <div class="col-md-4">
                 <button type="button" class="btn btn-outline-primary" id="addNewSkill">Add Skill</button>
             </div>
         </div>
+        <div id="newSkillsContainer" class="mt-2"></div>
     </div>
 
     <div class="form-group mb-3">
@@ -70,50 +70,49 @@
     </div>
 
     <div class="form-group mb-3">
-        <label class="form-label fw-bold">Or Create New Material</label>
+        <label class="form-label fw-bold">Or Create New Materials</label>
         
         <div class="mb-3">
             <label class="form-label">Material Type</label>
             <div class="form-check">
-                <input type="radio" asp-for="NewMaterial.MaterialType" value="Book" class="form-check-input" id="bookType"/>
+                <input type="radio" name="newMaterialType" value="Book" class="form-check-input" id="bookType"/>
                 <label for="bookType" class="form-check-label">Book</label>
             </div>
             <div class="form-check">
-                <input type="radio" asp-for="NewMaterial.MaterialType" value="Video" class="form-check-input" id="videoType"/>
+                <input type="radio" name="newMaterialType" value="Video" class="form-check-input" id="videoType"/>
                 <label for="videoType" class="form-check-label">Video</label>
             </div>
             <div class="form-check">
-                <input type="radio" asp-for="NewMaterial.MaterialType" value="Article" class="form-check-input" id="articleType"/>
+                <input type="radio" name="newMaterialType" value="Article" class="form-check-input" id="articleType"/>
                 <label for="articleType" class="form-check-label">Article</label>
             </div>
         </div>
 
         <div class="mb-3">
-            <label asp-for="NewMaterial.Title" class="form-label">Material Title</label>
-            <input asp-for="NewMaterial.Title" class="form-control" placeholder="Enter material title"/>
-            <span asp-validation-for="NewMaterial.Title" class="text-danger"></span>
+            <label class="form-label">Material Title</label>
+            <input type="text" class="form-control" id="newMaterialTitle" placeholder="Enter material title"/>
         </div>
 
         <!-- Book Fields -->
         <div id="bookFields" class="material-type-fields" style="display: none;">
             <div class="row">
                 <div class="col-md-6">
-                    <label asp-for="NewMaterial.Author" class="form-label">Author</label>
-                    <input asp-for="NewMaterial.Author" class="form-control" placeholder="Enter author name"/>
+                    <label class="form-label">Author</label>
+                    <input type="text" class="form-control" id="newMaterialAuthor" placeholder="Enter author name"/>
                 </div>
                 <div class="col-md-6">
-                    <label asp-for="NewMaterial.PageAmount" class="form-label">Page Amount</label>
-                    <input asp-for="NewMaterial.PageAmount" type="number" class="form-control" placeholder="Enter page count"/>
+                    <label class="form-label">Page Amount</label>
+                    <input type="number" class="form-control" id="newMaterialPageAmount" placeholder="Enter page count"/>
                 </div>
             </div>
             <div class="row mt-2">
                 <div class="col-md-6">
-                    <label asp-for="NewMaterial.Formant" class="form-label">Format</label>
-                    <input asp-for="NewMaterial.Formant" class="form-control" placeholder="e.g., PDF, EPUB"/>
+                    <label class="form-label">Format</label>
+                    <input type="text" class="form-control" id="newMaterialFormant" placeholder="e.g., PDF, EPUB"/>
                 </div>
                 <div class="col-md-6">
-                    <label asp-for="NewMaterial.PublicationDate" class="form-label">Publication Date</label>
-                    <input asp-for="NewMaterial.PublicationDate" type="date" class="form-control"/>
+                    <label class="form-label">Publication Date</label>
+                    <input type="date" class="form-control" id="newMaterialPublicationDate"/>
                 </div>
             </div>
         </div>
@@ -122,12 +121,12 @@
         <div id="videoFields" class="material-type-fields" style="display: none;">
             <div class="row">
                 <div class="col-md-6">
-                    <label asp-for="NewMaterial.Duration" class="form-label">Duration (minutes)</label>
-                    <input asp-for="NewMaterial.Duration" type="number" class="form-control" placeholder="Enter duration in minutes"/>
+                    <label class="form-label">Duration (minutes)</label>
+                    <input type="number" class="form-control" id="newMaterialDuration" placeholder="Enter duration in minutes"/>
                 </div>
                 <div class="col-md-6">
-                    <label asp-for="NewMaterial.Quality" class="form-label">Quality (pixels)</label>
-                    <input asp-for="NewMaterial.Quality" type="number" class="form-control" placeholder="e.g., 1080, 720"/>
+                    <label class="form-label">Quality (pixels)</label>
+                    <input type="number" class="form-control" id="newMaterialQuality" placeholder="e.g., 1080, 720"/>
                 </div>
             </div>
         </div>
@@ -136,12 +135,12 @@
         <div id="articleFields" class="material-type-fields" style="display: none;">
             <div class="row">
                 <div class="col-md-6">
-                    <label asp-for="NewMaterial.Date" class="form-label">Publication Date</label>
-                    <input asp-for="NewMaterial.Date" type="date" class="form-control"/>
+                    <label class="form-label">Publication Date</label>
+                    <input type="date" class="form-control" id="newMaterialDate"/>
                 </div>
                 <div class="col-md-6">
-                    <label asp-for="NewMaterial.Resource" class="form-label">Resource URL</label>
-                    <input asp-for="NewMaterial.Resource" class="form-control" placeholder="Enter resource URL"/>
+                    <label class="form-label">Resource URL</label>
+                    <input type="text" class="form-control" id="newMaterialResource" placeholder="Enter resource URL"/>
                 </div>
             </div>
         </div>
@@ -149,6 +148,7 @@
         <div class="mt-3">
             <button type="button" class="btn btn-outline-primary" id="addNewMaterial">Add Material</button>
         </div>
+        <div id="newMaterialsContainer" class="mt-2"></div>
     </div>
 
     <button type="submit" class="btn btn-primary mt-3">Add Course</button>
@@ -180,6 +180,9 @@
 </style>
 
 <script>
+    let newSkillsCount = 0;
+    let newMaterialsCount = 0;
+
     function setupTagPicker(pickerId, hiddenInputName) {
         const picker = document.getElementById(pickerId);
         const select = picker.querySelector("select");
@@ -225,11 +228,29 @@
         });
     }
 
+    function clearNewSkillForm() {
+        document.getElementById('newSkillName').value = '';
+    }
+
+    function clearNewMaterialForm() {
+        document.getElementById('newMaterialTitle').value = '';
+        document.getElementById('newMaterialAuthor').value = '';
+        document.getElementById('newMaterialPageAmount').value = '';
+        document.getElementById('newMaterialFormant').value = '';
+        document.getElementById('newMaterialPublicationDate').value = '';
+        document.getElementById('newMaterialDuration').value = '';
+        document.getElementById('newMaterialQuality').value = '';
+        document.getElementById('newMaterialDate').value = '';
+        document.getElementById('newMaterialResource').value = '';
+        document.querySelectorAll('input[name="newMaterialType"]').forEach(radio => radio.checked = false);
+        document.querySelectorAll('.material-type-fields').forEach(field => field.style.display = 'none');
+    }
+
     document.addEventListener("DOMContentLoaded", function () {
         setupTagPicker("skillsPicker", "SelectedSkillIds");
         setupTagPicker("materialsPicker", "SelectedMaterialIds");
         
-        const materialTypeRadios = document.querySelectorAll('input[name="NewMaterial.MaterialType"]');
+        const materialTypeRadios = document.querySelectorAll('input[name="newMaterialType"]');
         const materialTypeFields = document.querySelectorAll('.material-type-fields');
         
         materialTypeRadios.forEach(radio => {
@@ -247,7 +268,7 @@
         });
         
         document.getElementById('addNewSkill').addEventListener('click', function() {
-            const skillName = document.querySelector('input[name="NewSkill.Name"]').value.trim();
+            const skillName = document.getElementById('newSkillName').value.trim();
             if (skillName) {
                 const skillsSelect = document.querySelector('#skillsPicker select');
                 const option = document.createElement('option');
@@ -258,13 +279,33 @@
                 skillsSelect.appendChild(option);
                 option.selected = true;
                 skillsSelect.dispatchEvent(new Event('change'));
-                // Do not clear NewSkill.Name so it gets submitted to server
+                
+                const container = document.getElementById('newSkillsContainer');
+                const skillDiv = document.createElement('div');
+                skillDiv.className = 'badge bg-success d-flex align-items-center gap-1 me-2 mb-2';
+                skillDiv.innerHTML = `${skillName} <button type="button" class="btn-close btn-close-white btn-sm"></button>`;
+                
+                const nameInput = document.createElement('input');
+                nameInput.type = 'hidden';
+                nameInput.name = `NewSkills[${newSkillsCount}].Name`;
+                nameInput.value = skillName;
+                skillDiv.appendChild(nameInput);
+                
+                skillDiv.querySelector("button").addEventListener("click", () => {
+                    skillDiv.remove();
+                    const optionToRemove = skillsSelect.querySelector(`option[value="new_${skillName}"]`);
+                    if (optionToRemove) optionToRemove.remove();
+                });
+                
+                container.appendChild(skillDiv);
+                newSkillsCount++;
+                clearNewSkillForm();
             }
         });
         
         document.getElementById('addNewMaterial').addEventListener('click', function() {
-            const materialTitle = document.querySelector('input[name="NewMaterial.Title"]').value.trim();
-            const materialType = document.querySelector('input[name="NewMaterial.MaterialType"]:checked')?.value;
+            const materialTitle = document.getElementById('newMaterialTitle').value.trim();
+            const materialType = document.querySelector('input[name="newMaterialType"]:checked')?.value;
             
             if (materialTitle && materialType) {
                 const materialsSelect = document.querySelector('#materialsPicker select');
@@ -277,7 +318,110 @@
                 materialsSelect.appendChild(option);
                 option.selected = true;
                 materialsSelect.dispatchEvent(new Event('change'));
-                // Do not clear NewMaterial fields so they get submitted to server
+                
+                const container = document.getElementById('newMaterialsContainer');
+                const materialDiv = document.createElement('div');
+                materialDiv.className = 'badge bg-success d-flex align-items-center gap-1 me-2 mb-2';
+                materialDiv.innerHTML = `${materialTitle} (${materialType}) <button type="button" class="btn-close btn-close-white btn-sm"></button>`;
+                
+                const titleInput = document.createElement('input');
+                titleInput.type = 'hidden';
+                titleInput.name = `NewMaterials[${newMaterialsCount}].Title`;
+                titleInput.value = materialTitle;
+                materialDiv.appendChild(titleInput);
+                
+                const typeInput = document.createElement('input');
+                typeInput.type = 'hidden';
+                typeInput.name = `NewMaterials[${newMaterialsCount}].MaterialType`;
+                typeInput.value = materialType;
+                materialDiv.appendChild(typeInput);
+                
+                if (materialType === 'Book') {
+                    const author = document.getElementById('newMaterialAuthor').value;
+                    const pageAmount = document.getElementById('newMaterialPageAmount').value;
+                    const formant = document.getElementById('newMaterialFormant').value;
+                    const publicationDate = document.getElementById('newMaterialPublicationDate').value;
+                    
+                    if (author) {
+                        const authorInput = document.createElement('input');
+                        authorInput.type = 'hidden';
+                        authorInput.name = `NewMaterials[${newMaterialsCount}].Author`;
+                        authorInput.value = author;
+                        materialDiv.appendChild(authorInput);
+                    }
+                    
+                    if (pageAmount) {
+                        const pageInput = document.createElement('input');
+                        pageInput.type = 'hidden';
+                        pageInput.name = `NewMaterials[${newMaterialsCount}].PageAmount`;
+                        pageInput.value = pageAmount;
+                        materialDiv.appendChild(pageInput);
+                    }
+                    
+                    if (formant) {
+                        const formantInput = document.createElement('input');
+                        formantInput.type = 'hidden';
+                        formantInput.name = `NewMaterials[${newMaterialsCount}].Formant`;
+                        formantInput.value = formant;
+                        materialDiv.appendChild(formantInput);
+                    }
+                    
+                    if (publicationDate) {
+                        const dateInput = document.createElement('input');
+                        dateInput.type = 'hidden';
+                        dateInput.name = `NewMaterials[${newMaterialsCount}].PublicationDate`;
+                        dateInput.value = publicationDate;
+                        materialDiv.appendChild(dateInput);
+                    }
+                } else if (materialType === 'Video') {
+                    const duration = document.getElementById('newMaterialDuration').value;
+                    const quality = document.getElementById('newMaterialQuality').value;
+                    
+                    if (duration) {
+                        const durationInput = document.createElement('input');
+                        durationInput.type = 'hidden';
+                        durationInput.name = `NewMaterials[${newMaterialsCount}].Duration`;
+                        durationInput.value = duration;
+                        materialDiv.appendChild(durationInput);
+                    }
+                    
+                    if (quality) {
+                        const qualityInput = document.createElement('input');
+                        qualityInput.type = 'hidden';
+                        qualityInput.name = `NewMaterials[${newMaterialsCount}].Quality`;
+                        qualityInput.value = quality;
+                        materialDiv.appendChild(qualityInput);
+                    }
+                } else if (materialType === 'Article') {
+                    const date = document.getElementById('newMaterialDate').value;
+                    const resource = document.getElementById('newMaterialResource').value;
+                    
+                    if (date) {
+                        const dateInput = document.createElement('input');
+                        dateInput.type = 'hidden';
+                        dateInput.name = `NewMaterials[${newMaterialsCount}].Date`;
+                        dateInput.value = date;
+                        materialDiv.appendChild(dateInput);
+                    }
+                    
+                    if (resource) {
+                        const resourceInput = document.createElement('input');
+                        resourceInput.type = 'hidden';
+                        resourceInput.name = `NewMaterials[${newMaterialsCount}].Resource`;
+                        resourceInput.value = resource;
+                        materialDiv.appendChild(resourceInput);
+                    }
+                }
+                
+                materialDiv.querySelector("button").addEventListener("click", () => {
+                    materialDiv.remove();
+                    const optionToRemove = materialsSelect.querySelector(`option[value="new_${materialTitle}"]`);
+                    if (optionToRemove) optionToRemove.remove();
+                });
+                
+                container.appendChild(materialDiv);
+                newMaterialsCount++;
+                clearNewMaterialForm();
             }
         });
     });
