@@ -195,14 +195,15 @@
                 selectedIds.add(value);
                 console.log(`[TagPicker:${pickerId}] Added "${text}" (id=${value})`);
 
-                const hidden = document.createElement("input");
-                hidden.type = "hidden";
-                hidden.name = hiddenInputName;
-                hidden.value = value;
-                hidden.dataset.tagValue = value;
-                picker.appendChild(hidden);
-
-                console.log(`[TagPicker:${pickerId}] Hidden input created: name=${hiddenInputName}, value=${value}`);
+                if (/^\d+$/.test(value)) {
+                    const hidden = document.createElement("input");
+                    hidden.type = "hidden";
+                    hidden.name = hiddenInputName;
+                    hidden.value = value;
+                    hidden.dataset.tagValue = value;
+                    picker.appendChild(hidden);
+                    console.log(`[TagPicker:${pickerId}] Hidden input created: name=${hiddenInputName}, value=${value}`);
+                }
 
                 const tag = document.createElement("span");
                 tag.className = "badge bg-primary d-flex align-items-center gap-1";
@@ -211,7 +212,8 @@
                 tag.querySelector("button").addEventListener("click", () => {
                     selectedIds.delete(value);
                     tag.remove();
-                    picker.querySelector(`input[data-tag-value="${value}"]`).remove();
+                    const hiddenForValue = picker.querySelector(`input[data-tag-value="${value}"]`);
+                    if (hiddenForValue) hiddenForValue.remove();
                     console.log(`[TagPicker:${pickerId}] Removed "${text}" (id=${value})`);
                 });
 
@@ -256,7 +258,7 @@
                 skillsSelect.appendChild(option);
                 option.selected = true;
                 skillsSelect.dispatchEvent(new Event('change'));
-                document.querySelector('input[name="NewSkill.Name"]').value = '';
+                // Do not clear NewSkill.Name so it gets submitted to server
             }
         });
         
@@ -275,10 +277,7 @@
                 materialsSelect.appendChild(option);
                 option.selected = true;
                 materialsSelect.dispatchEvent(new Event('change'));
-                
-                document.querySelector('input[name="NewMaterial.Title"]').value = '';
-                document.querySelectorAll('input[name="NewMaterial.MaterialType"]').forEach(radio => radio.checked = false);
-                materialTypeFields.forEach(field => field.style.display = 'none');
+                // Do not clear NewMaterial fields so they get submitted to server
             }
         });
     });
