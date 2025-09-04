@@ -56,6 +56,18 @@ public class CourseService : ICourseService
         var courses = await unitOfWork.Repository<Course, int>().GetWhereAsync(c => true);
         return courses.Select(c => new CourseDTO(c)).ToList();
     }
+    
+    public async Task<IEnumerable<SkillDTO>> GetSkillsForCourse(int courseId)
+    {
+        var course = await unitOfWork.Repository<Course, int>().GetByIdAsync(courseId);
+        return course?.Skills.Select(s => new SkillDTO(s)) ?? new List<SkillDTO>();
+    }
+    
+    public async Task<IEnumerable<MaterialDTO>> GetMaterialsForCourse(int courseId)
+    {
+        var course = await unitOfWork.Repository<Course, int>().GetByIdAsync(courseId);
+        return course?.Materials.Select(m => new MaterialDTO(m)) ?? new List<MaterialDTO>();
+    }
 
     public async Task<bool> AddSkillToCourseAsync(int courseId, int skillId)
     {
