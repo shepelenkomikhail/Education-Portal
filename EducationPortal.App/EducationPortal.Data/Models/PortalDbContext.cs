@@ -16,8 +16,6 @@ public class PortalDbContext : DbContext, IDataProtectionKeyContext
     public virtual DbSet<Article> Articles { get; set; }
     public virtual DbSet<UserCourse> UserCourses { get; set; }
     public virtual DbSet<UserSkill> UserSkills { get; set; }
-    public virtual DbSet<CourseSkill> CourseSkills { get; set; }
-    public virtual DbSet<CourseMaterial> CourseMaterials { get; set; }
 
     public PortalDbContext() { }
     
@@ -53,8 +51,6 @@ public class PortalDbContext : DbContext, IDataProtectionKeyContext
         
         modelBuilder.Entity<UserCourse>().HasKey(uc => new { uc.UserId, uc.CourseId });
         modelBuilder.Entity<UserSkill>().HasKey(uc => new { uc.UserId, uc.SkillId });
-        modelBuilder.Entity<CourseSkill>().HasKey(cs => new { cs.CourseId, cs.SkillId });
-        modelBuilder.Entity<CourseMaterial>().HasKey(cm => new { cm.CourseId, cm.MaterialId });
         
         modelBuilder.ApplyConfiguration(new SkillConfiguration());
         modelBuilder.ApplyConfiguration(new UserConfiguration());

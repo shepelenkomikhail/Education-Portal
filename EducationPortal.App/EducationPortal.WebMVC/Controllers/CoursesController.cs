@@ -20,9 +20,17 @@ namespace WebMVC.Controllers
         }
 
         // GET: CoursesController
-        public ActionResult Index()
+        public async Task<ActionResult> Index()
         {
-            return View();
+            var courses = await courseService.GetAllAsync();
+            var courseModels = courses.Select(c => new CourseModel 
+            { 
+                Id = c.Id, 
+                Name = c.Name, 
+                Description = c.Description 
+            }).ToList();
+            
+            return View(courseModels);
         }
 
         // GET: CoursesController/Details/5
@@ -260,11 +268,9 @@ namespace WebMVC.Controllers
             if (ModelState.IsValid)
             {
                 var courseDto = new CourseDTO { Id = model.Id, Name = model.Name, Description = model.Description };
-                bool result = await courseService.UpdateAsync(courseDto);
+                bool result = await courseService.UpdateWithRelationsAsync(courseDto, selectedSkillIds, selectedMaterialIds);
                 if (result)
                 {
-                   //TODO: update relations
-                    
                     return RedirectToAction(nameof(Index));
                 }
                 ModelState.AddModelError("", "Failed to update course");

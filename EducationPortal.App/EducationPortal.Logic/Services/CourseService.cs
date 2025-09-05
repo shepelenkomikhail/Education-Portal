@@ -2,6 +2,7 @@ using EducationPortal.Data.Models;
 using EducationPortal.Data.Repo.RepositoryInterfaces;
 using EducationPortal.Logic.DTOs;
 using EducationPortal.Logic.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 
 namespace EducationPortal.Logic.Services;
@@ -59,13 +60,17 @@ public class CourseService : ICourseService
     
     public async Task<IEnumerable<SkillDTO>> GetSkillsForCourse(int courseId)
     {
-        var course = await unitOfWork.Repository<Course, int>().GetByIdAsync(courseId);
+        var course = await unitOfWork.Repository<Course, int>().GetAll()
+            .Include(c => c.Skills)
+            .FirstOrDefaultAsync(c => c.Id == courseId);
         return course?.Skills.Select(s => new SkillDTO(s)) ?? new List<SkillDTO>();
     }
     
     public async Task<IEnumerable<MaterialDTO>> GetMaterialsForCourse(int courseId)
     {
-        var course = await unitOfWork.Repository<Course, int>().GetByIdAsync(courseId);
+        var course = await unitOfWork.Repository<Course, int>().GetAll()
+            .Include(c => c.Materials)
+            .FirstOrDefaultAsync(c => c.Id == courseId);
         return course?.Materials.Select(m => new MaterialDTO(m)) ?? new List<MaterialDTO>();
     }
 
@@ -114,6 +119,58 @@ public class CourseService : ICourseService
                     throw new Exception($"Failed to add material {materialId}");
             }
             
+            transaction.Commit();
+            return true;
+        }
+        catch
+        {
+            transaction.Rollback();
+            return false;
+        }
+    }
+
+    public async Task<bool> UpdateWithRelationsAsync(CourseDTO course, List<int> skillIds, List<int> materialIds)
+    {
+        using var transaction = unitOfWork.BeginTransaction();
+        try
+        {
+            var existingCourse = await unitOfWork.Repository<Course, int>().GetAll()
+                .Include(c => c.Skills)
+                .Include(c => c.Materials)
+                .FirstOrDefaultAsync(c => c.Id == course.Id);
+                
+            if (existingCourse == null)
+            {
+                transaction.Rollback();
+                return false;
+            }
+            
+            existingCourse.Name = course.Name;
+            existingCourse.Description = course.Description;
+            
+            existingCourse.Skills.Clear();
+            foreach (var skillId in skillIds)
+            {
+                var skill = await unitOfWork.Repository<Skill, int>().GetByIdAsync(skillId);
+                if (skill != null)
+                {
+                    existingCourse.Skills.Add(skill);
+                }
+            }
+            
+            existingCourse.Materials.Clear();
+            foreach (var materialId in materialIds)
+            {
+                var material = await unitOfWork.Repository<Material, int>().GetByIdAsync(materialId);
+                if (material != null)
+                {
+                    existingCourse.Materials.Add(material);
+                }
+            }
+
+            await unitOfWork.Repository<Course, int>().UpdateAsync(existingCourse);
+            await unitOfWork.SaveAsync();
+
             transaction.Commit();
             return true;
         }
