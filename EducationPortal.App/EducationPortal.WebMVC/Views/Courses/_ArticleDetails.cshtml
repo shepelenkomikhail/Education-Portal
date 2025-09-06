@@ -1,0 +1,90 @@
+@model EducationPortal.WebMVC.Models.ArticleModel
+
+<div class="card">
+    <div class="card-header bg-info text-white">
+        <div class="d-flex align-items-center">
+            <i class="fas fa-file-alt me-2"></i>
+            <h5 class="mb-0">Article Details</h5>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-8">
+                <h4 class="text-info mb-3">@Model.Title</h4>
+                
+                <div class="row mb-3">
+                    <div class="col-sm-4">
+                        <strong>Source:</strong>
+                    </div>
+                    <div class="col-sm-8">
+                        @Model.Resource
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-sm-4">
+                        <strong>Publication Date:</strong>
+                    </div>
+                    <div class="col-sm-8">
+                        @Model.Date.ToString("MMMM dd, yyyy")
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-sm-4">
+                        <strong>Age:</strong>
+                    </div>
+                    <div class="col-sm-8">
+                        @{
+                            var timeSpan = DateTime.Now - Model.Date;
+                            var daysDiff = timeSpan.Days;
+                        }
+                        @if (daysDiff == 0)
+                        {
+                            <span class="badge bg-success">Today</span>
+                        }
+                        else if (daysDiff < 30)
+                        {
+                            <span class="badge bg-primary">@daysDiff days ago</span>
+                        }
+                        else if (daysDiff < 365)
+                        {
+                            var months = daysDiff / 30;
+                            <span class="badge bg-warning">@months months ago</span>
+                        }
+                        else
+                        {
+                            var years = daysDiff / 365;
+                            <span class="badge bg-secondary">@years years ago</span>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="text-center">
+                    <i class="fas fa-file-alt fa-5x text-info mb-3"></i>
+                    <div class="bg-light p-3 rounded">
+                        <h6 class="text-muted mb-2">Article Information</h6>
+                        <div class="d-flex justify-content-between">
+                            <span>Source:</span>
+                            <strong>@Model.Resource</strong>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span>Date:</span>
+                            <strong>@Model.Date.ToString("MMM yyyy")</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="alert alert-info">
+                    <i class="fas fa-newspaper me-2"></i>
+                    <strong>About this article:</strong> This article was published by @Model.Resource on @Model.Date.ToString("MMMM dd, yyyy").
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
