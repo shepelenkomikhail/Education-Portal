@@ -34,9 +34,26 @@ namespace WebMVC.Controllers
         }
 
         // GET: CoursesController/Details/5
-        public ActionResult Details(int id)
+        public async Task<ActionResult> Details(int id)
         {
-            return View();
+            var course = await courseService.GetByIdAsync(id);
+            var skills = await courseService.GetSkillsForCourse(id);
+            var materials = await courseService.GetMaterialsForCourse(id);
+            var books = materials.OfType<BookDTO>().ToList();
+            var articles = materials.OfType<ArticleDTO>().ToList();
+            var videos = materials.OfType<VideoDTO>().ToList();
+            var courseModel = new CourseDetailsModel
+            {
+                Id = course.Id,
+                Name = course.Name,
+                Description = course.Description,
+                Skills = skills.Select(s => new SkillModel { Id = s.Id, Name = s.Name }).ToList(),
+                Materials = materials.Select(m => new MaterialModel { Id = m.Id, Title = m.Title }).ToList(),
+                Books = books.Select(b => new BookModel { Id = b.Id, Title = b.Title, Author = b.Author, PageAmount = b.PageAmount, Formant = b.Formant, PublicationDate = b.PublicationDate }).ToList(),
+                Articles = articles.Select(a => new ArticleModel { Id = a.Id, Title = a.Title, Date = a.Date, Resource = a.Resource }).ToList(),
+                Videos = videos.Select(v => new VideoModel { Id = v.Id, Title = v.Title, Duration = v.Duration, Quality = v.Quality }).ToList()
+            };
+            return View(courseModel);
         }
 
         // GET: CoursesController/Create
@@ -310,6 +327,52 @@ namespace WebMVC.Controllers
             catch
             {
                 return View();
+            }
+        }
+
+        // GET: CoursesController/GetMaterialDetails
+        [HttpGet]
+        public async Task<ActionResult> GetMaterialDetails(string materialType, int materialId)
+        {
+            try
+            {
+                var material = await materialService.GetByIdAsync(materialId);
+                if (material == null)
+                {
+                    return PartialView("_ErrorMessage", "Material not found.");
+                }
+
+                return materialType.ToLower() switch
+                {
+                    "book" when material is BookDTO bookDto => PartialView("_BookDetails", new BookModel
+                    {
+                        Id = bookDto.Id,
+                        Title = bookDto.Title,
+                        Author = bookDto.Author,
+                        PageAmount = bookDto.PageAmount,
+                        Formant = bookDto.Formant,
+                        PublicationDate = bookDto.PublicationDate
+                    }),
+                    "video" when material is VideoDTO videoDto => PartialView("_VideoDetails", new VideoModel
+                    {
+                        Id = videoDto.Id,
+                        Title = videoDto.Title,
+                        Duration = videoDto.Duration,
+                        Quality = videoDto.Quality
+                    }),
+                    "article" when material is ArticleDTO articleDto => PartialView("_ArticleDetails", new ArticleModel
+                    {
+                        Id = articleDto.Id,
+                        Title = articleDto.Title,
+                        Date = articleDto.Date,
+                        Resource = articleDto.Resource
+                    }),
+                    _ => PartialView("_ErrorMessage", "Unsupported material type.")
+                };
+            }
+            catch (Exception)
+            {
+                return PartialView("_ErrorMessage", "Error loading material details.");
             }
         }
     }

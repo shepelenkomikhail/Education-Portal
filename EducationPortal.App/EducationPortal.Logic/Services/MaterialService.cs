@@ -116,13 +116,13 @@ public class MaterialService: IMaterialService
     public async Task<MaterialDTO?> GetByIdAsync(int id)
     {
         var book = await unitOfWork.Repository<Book, int>().GetByIdAsync(id);
-        if (book != null) return new MaterialDTO(book);
+        if (book != null) return new BookDTO(book);
 
         var video = await unitOfWork.Repository<Video, int>().GetByIdAsync(id);
-        if (video != null) return new MaterialDTO(video);
+        if (video != null) return new VideoDTO(video);
 
         var article = await unitOfWork.Repository<Article, int>().GetByIdAsync(id);
-        if (article != null) return new MaterialDTO(article);
+        if (article != null) return new ArticleDTO(article);
 
         return null;
     }
@@ -130,13 +130,13 @@ public class MaterialService: IMaterialService
     public async Task<MaterialDTO?> GetByTitleAsync(string title)
     {
         var book = await unitOfWork.Repository<Book, int>().GetSingleOrDefaultAsync(b => b.Title == title);
-        if (book != null) return new MaterialDTO(book);
+        if (book != null) return new BookDTO(book);
 
         var video = await unitOfWork.Repository<Video, int>().GetSingleOrDefaultAsync(v => v.Title == title);
-        if (video != null) return new MaterialDTO(video);
+        if (video != null) return new VideoDTO(video);
 
         var article = await unitOfWork.Repository<Article, int>().GetSingleOrDefaultAsync(a => a.Title == title);
-        if (article != null) return new MaterialDTO(article);
+        if (article != null) return new ArticleDTO(article);
 
         return null;
     }
@@ -145,11 +145,11 @@ public class MaterialService: IMaterialService
     {
         var allMaterials = new List<MaterialDTO>();
         var books = await unitOfWork.Repository<Book, int>().GetWhereAsync(b => true);
-        allMaterials.AddRange(books.Select(b => new MaterialDTO(b)));
+        allMaterials.AddRange(books.Select(b => new BookDTO(b)));
         var videos = await unitOfWork.Repository<Video, int>().GetWhereAsync(v => true);
-        allMaterials.AddRange(videos.Select(v => new MaterialDTO(v)));
+        allMaterials.AddRange(videos.Select(v => new VideoDTO(v)));
         var articles = await unitOfWork.Repository<Article, int>().GetWhereAsync(a => true);
-        allMaterials.AddRange(articles.Select(a => new MaterialDTO(a)));
+        allMaterials.AddRange(articles.Select(a => new ArticleDTO(a)));
 
         return allMaterials;
     }
@@ -159,11 +159,11 @@ public class MaterialService: IMaterialService
         return materialType.ToLower() switch
         {
             "book" => (await unitOfWork.Repository<Book, int>().GetWhereAsync(b => true))
-                .Select(b => new MaterialDTO(b)),
+                .Select(b => new BookDTO(b)),
             "video" => (await unitOfWork.Repository<Video, int>().GetWhereAsync(v => true))
-                .Select(v => new MaterialDTO(v)),
+                .Select(v => new VideoDTO(v)),
             "article" => (await unitOfWork.Repository<Article, int>().GetWhereAsync(a => true))
-                .Select(a => new MaterialDTO(a)),
+                .Select(a => new ArticleDTO(a)),
             _ => new List<MaterialDTO>()
         };
     }

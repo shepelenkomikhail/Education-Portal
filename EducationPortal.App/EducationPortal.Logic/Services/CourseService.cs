@@ -71,7 +71,18 @@ public class CourseService : ICourseService
         var course = await unitOfWork.Repository<Course, int>().GetAll()
             .Include(c => c.Materials)
             .FirstOrDefaultAsync(c => c.Id == courseId);
-        return course?.Materials.Select(m => new MaterialDTO(m)) ?? new List<MaterialDTO>();
+        return course?.Materials.Select(CreateMaterialDTO) ?? new List<MaterialDTO>();
+    }
+    
+    private MaterialDTO CreateMaterialDTO(Material material)
+    {
+        return material switch
+        {
+            Book book => new BookDTO(book),
+            Video video => new VideoDTO(video),
+            Article article => new ArticleDTO(article),
+            _ => new MaterialDTO(material)
+        };
     }
 
     public async Task<bool> AddSkillToCourseAsync(int courseId, int skillId)
