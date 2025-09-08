@@ -36,6 +36,21 @@ namespace EducationPortal.Data.Migrations
                     b.ToTable("CourseMaterial");
                 });
 
+            modelBuilder.Entity("CourseSkill", b =>
+                {
+                    b.Property<int>("CoursesId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("SkillsId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("CoursesId", "SkillsId");
+
+                    b.HasIndex("SkillsId");
+
+                    b.ToTable("CourseSkill");
+                });
+
             modelBuilder.Entity("EducationPortal.Data.Models.Course", b =>
                 {
                     b.Property<int>("Id")
@@ -406,6 +421,23 @@ namespace EducationPortal.Data.Migrations
                         });
                 });
 
+            modelBuilder.Entity("Microsoft.AspNetCore.DataProtection.EntityFrameworkCore.DataProtectionKey", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("FriendlyName")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Xml")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("DataProtectionKeys");
+                });
+
             modelBuilder.Entity("EducationPortal.Data.Models.Article", b =>
                 {
                     b.HasBaseType("EducationPortal.Data.Models.Material");
@@ -540,6 +572,21 @@ namespace EducationPortal.Data.Migrations
                     b.HasOne("EducationPortal.Data.Models.Material", null)
                         .WithMany()
                         .HasForeignKey("MaterialsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("CourseSkill", b =>
+                {
+                    b.HasOne("EducationPortal.Data.Models.Course", null)
+                        .WithMany()
+                        .HasForeignKey("CoursesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("EducationPortal.Data.Models.Skill", null)
+                        .WithMany()
+                        .HasForeignKey("SkillsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

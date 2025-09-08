@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Query.Internal;
 
 namespace EducationPortal.Data.Models;
 
-public class User
+public class User : BaseEntity<int>
 {
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]

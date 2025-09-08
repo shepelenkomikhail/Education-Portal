@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EducationPortal.Data.Models;
 
-public abstract class Material
+public abstract class Material : BaseEntity<int>
 {
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -14,4 +14,6 @@ public abstract class Material
     public string Title { get; set; } = string.Empty;
     
     public virtual ICollection<Course> Courses { get; set; } = new HashSet<Course>();
+
+    public virtual ICollection<CourseMaterial> CourseMaterials { get; set; } = new HashSet<CourseMaterial>();
 }
