@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Query.Internal;
 
 namespace EducationPortal.Data.Models;
 
-public class User : IdentityUser<int>
+public class User : IdentityUser<int>, IBaseEntity<int>
 {
     [Required]
     [StringLength(50)]
