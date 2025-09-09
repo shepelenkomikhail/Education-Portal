@@ -3,10 +3,8 @@ using WebMVC.Models;
 
 namespace EducationPortal.WebMVC.Models;
 
-public class CourseCreateViewModel
+public class CourseEditViewModel
 {
-    public int Id { get; set; }
-    
     [Required(ErrorMessage = "Course name is required")]
     [StringLength(50, ErrorMessage = "Course name cannot exceed 50 characters")]
     public string Name { get; set; } = string.Empty;
@@ -23,7 +21,4 @@ public class CourseCreateViewModel
     
     [Required(ErrorMessage = "Please select at least one material")]
     public List<int> SelectedMaterialIds { get; set; } = new();
-    
-    public List<NewSkillModel> NewSkills { get; set; } = new();
-    public List<NewMaterialModel> NewMaterials { get; set; } = new();
 }

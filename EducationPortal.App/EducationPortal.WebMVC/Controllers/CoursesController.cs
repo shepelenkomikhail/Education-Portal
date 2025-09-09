@@ -20,9 +20,17 @@ namespace WebMVC.Controllers
         }
 
         // GET: CoursesController
-        public ActionResult Index()
+        public async Task<ActionResult> Index()
         {
-            return View();
+            var courses = await courseService.GetAllAsync();
+            var courseModels = courses.Select(c => new CourseModel 
+            { 
+                Id = c.Id, 
+                Name = c.Name, 
+                Description = c.Description 
+            }).ToList();
+            
+            return View(courseModels);
         }
 
         // GET: CoursesController/Details/5
@@ -163,24 +171,124 @@ namespace WebMVC.Controllers
         }
 
         // GET: CoursesController/Edit/5
-        public ActionResult Edit(int id)
+        public async Task<ActionResult> Edit(int id)
         {
-            return View();
+            var course = await courseService.GetByIdAsync(id);
+            if (course == null)
+            {
+                return NotFound();
+            }
+
+            var skills = await skillService.GetAllAsync();
+            var materials = await materialService.GetAllAsync();
+            var courseSkills = await courseService.GetSkillsForCourse(id);
+            var courseMaterials = await courseService.GetMaterialsForCourse(id);
+            
+            var viewModel = new CourseCreateViewModel
+            {
+                Id = course.Id,
+                Name = course.Name,
+                Description = course.Description,
+                Skills = skills.Select(s => new SkillModel { Id = s.Id, Name = s.Name }).ToList(),
+                Materials = materials.Select(m => new MaterialModel { Id = m.Id, Title = m.Title }).ToList(),
+                SelectedSkillIds = courseSkills.Select(s => s.Id).ToList(),
+                SelectedMaterialIds = courseMaterials.Select(m => m.Id).ToList(),
+                NewSkills = new List<NewSkillModel>(),
+                NewMaterials = new List<NewMaterialModel>()
+            };
+            
+            return View(viewModel);
         }
 
         // POST: CoursesController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public async Task<ActionResult> Edit(int id, CourseCreateViewModel model)
         {
-            try
+            if (id != model.Id)
             {
-                return RedirectToAction(nameof(Index));
+                return NotFound();
             }
-            catch
+
+            var selectedSkillIds = new List<int>(model.SelectedSkillIds ?? new List<int>());
+            var selectedMaterialIds = new List<int>(model.SelectedMaterialIds ?? new List<int>());
+            
+            if (model.NewSkills != null)
             {
-                return View();
+                foreach (var newSkill in model.NewSkills)
+                {
+                    if (!string.IsNullOrWhiteSpace(newSkill?.Name))
+                    {
+                        var skillDto = new SkillDTO { Name = newSkill.Name };
+                        var skillCreated = await skillService.InsertAsync(skillDto);
+                        if (skillCreated)
+                        {
+                            var createdSkill = await skillService.GetByNameAsync(newSkill.Name);
+                            if (createdSkill != null)
+                            {
+                                selectedSkillIds.Add(createdSkill.Id);
+                            }
+                        }
+                    }
+                }
             }
+            
+            if (model.NewMaterials != null)
+            {
+                foreach (var newMaterial in model.NewMaterials)
+                {
+                    if (!string.IsNullOrWhiteSpace(newMaterial?.Title) && !string.IsNullOrWhiteSpace(newMaterial?.MaterialType))
+                    {
+                        var materialDto = CreateMaterialDto(newMaterial);
+                        if (materialDto != null)
+                        {
+                            var materialCreated = await materialService.InsertAsync(materialDto);
+                            if (materialCreated)
+                            {
+                                var createdMaterial = await materialService.GetByTitleAsync(newMaterial.Title);
+                                if (createdMaterial != null)
+                                {
+                                    selectedMaterialIds.Add(createdMaterial.Id);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            
+            if (selectedSkillIds.Count == 0)
+            {
+                ModelState.AddModelError("SelectedSkillIds", "Please select at least one skill or create a new one");
+            }
+            if (selectedMaterialIds.Count == 0)
+            {
+                ModelState.AddModelError("SelectedMaterialIds", "Please select at least one material or create a new one");
+            }
+
+            if (ModelState.IsValid)
+            {
+                var courseDto = new CourseDTO { Id = model.Id, Name = model.Name, Description = model.Description };
+                bool result = await courseService.UpdateWithRelationsAsync(courseDto, selectedSkillIds, selectedMaterialIds);
+                if (result)
+                {
+                    return RedirectToAction(nameof(Index));
+                }
+                ModelState.AddModelError("", "Failed to update course");
+            }
+            
+            var skills = await skillService.GetAllAsync();
+            var materials = await materialService.GetAllAsync();
+            var viewModel = new CourseCreateViewModel
+            {
+                Id = model.Id,
+                Name = model.Name,
+                Description = model.Description,
+                Skills = skills.Select(s => new SkillModel { Id = s.Id, Name = s.Name }).ToList(),
+                Materials = materials.Select(m => new MaterialModel { Id = m.Id, Title = m.Title }).ToList(),
+                NewSkills = model.NewSkills ?? new List<NewSkillModel>(),
+                NewMaterials = model.NewMaterials ?? new List<NewMaterialModel>()
+            };
+            return View(viewModel);
         }
 
         // GET: CoursesController/Delete/5
@@ -196,6 +304,7 @@ namespace WebMVC.Controllers
         {
             try
             {
+                courseService.DeleteAsync(id);
                 return RedirectToAction(nameof(Index));
             }
             catch

@@ -12,5 +12,8 @@ public interface ICourseService
     Task<IEnumerable<CourseDTO>> GetAllAsync();
     Task<bool> AddSkillToCourseAsync(int courseId, int skillId);
     Task<bool> AddMaterialToCourseAsync(int courseId, int materialId);
+    Task<IEnumerable<MaterialDTO>> GetMaterialsForCourse(int courseId);
+    Task<IEnumerable<SkillDTO>> GetSkillsForCourse(int courseId);
     Task<bool> InsertWithRelationsAsync(CourseDTO course, List<int> skillIds, List<int> materialIds);
+    Task<bool> UpdateWithRelationsAsync(CourseDTO course, List<int> skillIds, List<int> materialIds);
 }
