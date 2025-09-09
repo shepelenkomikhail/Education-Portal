@@ -15,6 +15,4 @@ public class Skill : BaseEntity<int>
     
     public virtual ICollection<UserSkill> UserSkills { get; set; } = new HashSet<UserSkill>();
     public virtual ICollection<Course> Courses { get; set; } = new HashSet<Course>();
-    
-    public virtual ICollection<CourseSkill> CourseSkills { get; set; } = new HashSet<CourseSkill>();
 }

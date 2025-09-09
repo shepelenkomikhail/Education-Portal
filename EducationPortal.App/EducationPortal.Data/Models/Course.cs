@@ -20,7 +20,4 @@ public class Course : BaseEntity<int>
     public virtual ICollection<Material> Materials { get; set; } = new HashSet<Material>();
     public virtual ICollection<Skill> Skills { get; set; } = new HashSet<Skill>();
     public virtual ICollection<UserCourse> UserCourses { get; set; } = new HashSet<UserCourse>();
-    
-    public virtual ICollection<CourseSkill> CourseSkills { get; set; } = new HashSet<CourseSkill>();
-    public virtual ICollection<CourseMaterial> CourseMaterials { get; set; } = new HashSet<CourseMaterial>();
 }

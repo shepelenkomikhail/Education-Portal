@@ -1,0 +1,11 @@
+@model EducationPortal.WebMVC.Models.CourseCreateViewModel
+
+@{
+    ViewData["Title"] = "Edit Course";
+    ViewData["Action"] = "Edit";
+    ViewData["SubmitButtonText"] = "Update Course";
+}
+
+<h2 class="mb-4">Edit Course</h2>
+
+@await Html.PartialAsync("_CourseForm", Model)
