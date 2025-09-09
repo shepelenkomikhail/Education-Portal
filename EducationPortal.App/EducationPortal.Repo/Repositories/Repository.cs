@@ -19,6 +19,11 @@ public class Repository<T, TId> : IRepository<T, TId> where T : class, IBaseEnti
         return context.Set<T>();
     }
 
+    public IQueryable<T> GetQueryable()
+    {
+        return context.Set<T>();
+    }
+
     public async Task<T?> GetByIdAsync(TId id)
     {
         return await context.Set<T>().FindAsync(id);

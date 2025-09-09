@@ -47,6 +47,8 @@ public class PortalDbContext : IdentityDbContext<User, IdentityRole<int>, int>, 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        base.OnModelCreating(modelBuilder);
+
         modelBuilder.Entity<Book>().ToTable("Books");
         modelBuilder.Entity<Video>().ToTable("Videos");
         modelBuilder.Entity<Article>().ToTable("Articles");
