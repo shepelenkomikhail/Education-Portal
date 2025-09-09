@@ -1,0 +1,18 @@
+@model EducationPortal.WebMVC.Models.VideoModel
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="form-group mb-3">
+            <label asp-for="Duration" class="form-label">Duration (minutes)</label>
+            <input asp-for="Duration" class="form-control" type="number" />
+            <span asp-validation-for="Duration" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="form-group mb-3">
+            <label asp-for="Quality" class="form-label">Quality (p)</label>
+            <input asp-for="Quality" class="form-control" type="number" placeholder="e.g., 1080, 720, 480" />
+            <span asp-validation-for="Quality" class="text-danger"></span>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,34 @@
+@model EducationPortal.WebMVC.Models.BookModel
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="form-group mb-3">
+            <label asp-for="Author" class="form-label">Author</label>
+            <input asp-for="Author" class="form-control" />
+            <span asp-validation-for="Author" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="form-group mb-3">
+            <label asp-for="PageAmount" class="form-label">Page Amount</label>
+            <input asp-for="PageAmount" class="form-control" type="number" />
+            <span asp-validation-for="PageAmount" class="text-danger"></span>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-6">
+        <div class="form-group mb-3">
+            <label asp-for="Formant" class="form-label">Format</label>
+            <input asp-for="Formant" class="form-control" />
+            <span asp-validation-for="Formant" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="form-group mb-3">
+            <label asp-for="PublicationDate" class="form-label">Publication Date</label>
+            <input asp-for="PublicationDate" class="form-control" type="date" />
+            <span asp-validation-for="PublicationDate" class="text-danger"></span>
+        </div>
+    </div>
+</div>
