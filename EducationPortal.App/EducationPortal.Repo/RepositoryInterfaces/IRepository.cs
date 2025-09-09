@@ -3,7 +3,7 @@ using System.Linq.Expressions;
 
 namespace EducationPortal.Data.Repo.RepositoryInterfaces;
 
-public interface IRepository<TEntity, TId> where TEntity : BaseEntity<TId>
+public interface IRepository<TEntity, TId> where TEntity : IBaseEntity<TId>
 {
     IQueryable<TEntity> GetAll();
     Task<TEntity?> GetByIdAsync(TId id);

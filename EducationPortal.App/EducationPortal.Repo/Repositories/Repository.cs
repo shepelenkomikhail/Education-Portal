@@ -5,7 +5,7 @@ using System.Linq.Expressions;
 
 namespace EducationPortal.Data.Repo.Repositories;
 
-public class Repository<T, TId> : IRepository<T, TId> where T : BaseEntity<TId>
+public class Repository<T, TId> : IRepository<T, TId> where T : class, IBaseEntity<TId>
 {
     protected readonly PortalDbContext context;
 
