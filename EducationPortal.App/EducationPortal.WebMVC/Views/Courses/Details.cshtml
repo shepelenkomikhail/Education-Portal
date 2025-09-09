@@ -1,0 +1,228 @@
+@model WebMVC.Models.CourseDetailsModel
+
+@{
+    ViewData["Title"] = Model.Name;
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <!-- Course Overview Section -->
+        <div class="col-12 mb-4">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="mb-0">@Model.Name</h2>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <h5>Description</h5>
+                            <p class="text-muted">@Model.Description</p>
+                            
+                            <h5 class="mt-4">Skills</h5>
+                            @if (Model.Skills.Any())
+                            {
+                                <div class="d-flex flex-wrap gap-2">
+                                    @foreach (var skill in Model.Skills)
+                                    {
+                                        <span class="badge bg-secondary">@skill.Name</span>
+                                    }
+                                </div>
+                            }
+                            else
+                            {
+                                <p class="text-muted">No skills assigned to this course.</p>
+                            }
+                        </div>
+                        <div class="col-md-4">
+                            <h5>Materials Summary</h5>
+                            <div class="list-group">
+                                <div class="list-group-item d-flex justify-content-between align-items-center">
+                                    Books
+                                    <span class="badge bg-primary rounded-pill">@Model.Books.Count</span>
+                                </div>
+                                <div class="list-group-item d-flex justify-content-between align-items-center">
+                                    Videos
+                                    <span class="badge bg-success rounded-pill">@Model.Videos.Count</span>
+                                </div>
+                                <div class="list-group-item d-flex justify-content-between align-items-center">
+                                    Articles
+                                    <span class="badge bg-info rounded-pill">@Model.Articles.Count</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Materials Accordion -->
+        <div class="col-md-6">
+            <div class="accordion" id="materialsAccordion">
+                <!-- Books Section -->
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="booksHeader">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                                data-bs-target="#booksCollapse" aria-expanded="false" aria-controls="booksCollapse">
+                            <i class="fas fa-book me-2"></i>Books (@Model.Books.Count)
+                        </button>
+                    </h2>
+                    <div id="booksCollapse" class="accordion-collapse collapse" aria-labelledby="booksHeader" 
+                         data-bs-parent="#materialsAccordion">
+                        <div class="accordion-body">
+                            @if (Model.Books.Any())
+                            {
+                                <div class="list-group">
+                                    @foreach (var book in Model.Books)
+                                    {
+                                        <button type="button" class="list-group-item list-group-item-action material-item" 
+                                                data-material-type="book" data-material-id="@book.Id">
+                                            <div class="d-flex w-100 justify-content-between">
+                                                <h6 class="mb-1">@book.Title</h6>
+                                                <small>@book.Author</small>
+                                            </div>
+                                            <p class="mb-1">@book.PageAmount pages • @book.Formant</p>
+                                            <small>Published: @book.PublicationDate.ToString("MMM yyyy")</small>
+                                        </button>
+                                    }
+                                </div>
+                            }
+                            else
+                            {
+                                <p class="text-muted">No books available for this course.</p>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Videos Section -->
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="videosHeader">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                                data-bs-target="#videosCollapse" aria-expanded="false" aria-controls="videosCollapse">
+                            <i class="fas fa-video me-2"></i>Videos (@Model.Videos.Count)
+                        </button>
+                    </h2>
+                    <div id="videosCollapse" class="accordion-collapse collapse" aria-labelledby="videosHeader" 
+                         data-bs-parent="#materialsAccordion">
+                        <div class="accordion-body">
+                            @if (Model.Videos.Any())
+                            {
+                                <div class="list-group">
+                                    @foreach (var video in Model.Videos)
+                                    {
+                                        <button type="button" class="list-group-item list-group-item-action material-item" 
+                                                data-material-type="video" data-material-id="@video.Id">
+                                            <div class="d-flex w-100 justify-content-between">
+                                                <h6 class="mb-1">@video.Title</h6>
+                                                <small>@video.Duration min</small>
+                                            </div>
+                                            <p class="mb-1">Quality: @video.Quality</p>
+                                        </button>
+                                    }
+                                </div>
+                            }
+                            else
+                            {
+                                <p class="text-muted">No videos available for this course.</p>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Articles Section -->
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="articlesHeader">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                                data-bs-target="#articlesCollapse" aria-expanded="false" aria-controls="articlesCollapse">
+                            <i class="fas fa-file-alt me-2"></i>Articles (@Model.Articles.Count)
+                        </button>
+                    </h2>
+                    <div id="articlesCollapse" class="accordion-collapse collapse" aria-labelledby="articlesHeader" 
+                         data-bs-parent="#materialsAccordion">
+                        <div class="accordion-body">
+                            @if (Model.Articles.Any())
+                            {
+                                <div class="list-group">
+                                    @foreach (var article in Model.Articles)
+                                    {
+                                        <button type="button" class="list-group-item list-group-item-action material-item" 
+                                                data-material-type="article" data-material-id="@article.Id">
+                                            <div class="d-flex w-100 justify-content-between">
+                                                <h6 class="mb-1">@article.Title</h6>
+                                                <small>@article.Date.ToString("MMM yyyy")</small>
+                                            </div>
+                                            <p class="mb-1">@article.Resource</p>
+                                        </button>
+                                    }
+                                </div>
+                            }
+                            else
+                            {
+                                <p class="text-muted">No articles available for this course.</p>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Material Details Panel -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Material Details</h5>
+                </div>
+                <div class="card-body" id="materialDetailsPanel">
+                    <div class="text-center text-muted">
+                        <i class="fas fa-hand-pointer fa-3x mb-3"></i>
+                        <p>Select a material from the accordion to view its details</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Back Button -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <a asp-action="Index" class="btn btn-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Back to Courses
+            </a>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            $('.material-item').click(function() {
+                const materialType = $(this).data('material-type');
+                const materialId = $(this).data('material-id');
+                
+                // Remove active class from all items
+                $('.material-item').removeClass('active');
+                // Add active class to clicked item
+                $(this).addClass('active');
+                
+                // Load material details via AJAX
+                loadMaterialDetails(materialType, materialId);
+            });
+        });
+        
+        function loadMaterialDetails(materialType, materialId) {
+            $.ajax({
+                url: '@Url.Action("GetMaterialDetails", "Courses")',
+                type: 'GET',
+                data: { materialType: materialType, materialId: materialId },
+                success: function(data) {
+                    $('#materialDetailsPanel').html(data);
+                },
+                error: function() {
+                    $('#materialDetailsPanel').html('<div class="alert alert-danger">Error loading material details.</div>');
+                }
+            });
+        }
+    </script>
+}

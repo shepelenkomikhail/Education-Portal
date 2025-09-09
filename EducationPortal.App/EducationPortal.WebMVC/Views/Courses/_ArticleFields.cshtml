@@ -1,0 +1,18 @@
+@model EducationPortal.WebMVC.Models.ArticleModel
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="form-group mb-3">
+            <label asp-for="Date" class="form-label">Date</label>
+            <input asp-for="Date" class="form-control" type="date" />
+            <span asp-validation-for="Date" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="form-group mb-3">
+            <label asp-for="Resource" class="form-label">Resource</label>
+            <input asp-for="Resource" class="form-control" placeholder="e.g., Website, Journal, Magazine" />
+            <span asp-validation-for="Resource" class="text-danger"></span>
+        </div>
+    </div>
+</div>
