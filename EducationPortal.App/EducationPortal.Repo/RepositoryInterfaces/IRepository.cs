@@ -3,12 +3,13 @@ using System.Linq.Expressions;
 
 namespace EducationPortal.Data.Repo.RepositoryInterfaces;
 
-public interface IRepository<TEntity, TId> where TEntity : BaseEntity<TId>
+public interface IRepository<TEntity, TId> where TEntity : IBaseEntity<TId>
 {
     IQueryable<TEntity> GetAll();
     Task<TEntity?> GetByIdAsync(TId id);
     Task<TEntity?> GetSingleOrDefaultAsync(Expression<Func<TEntity, bool>> predicate);
     Task<IEnumerable<TEntity>> GetWhereAsync(Expression<Func<TEntity, bool>> predicate);
+    IQueryable<TEntity> GetQueryable();
     Task<bool> InsertAsync(TEntity entity);
     Task<bool> UpdateAsync(TEntity entity);
     Task<bool> DeleteAsync(TEntity entity);

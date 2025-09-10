@@ -1,8 +1,65 @@
-﻿@{
+﻿@model EducationPortal.WebMVC.Models.HomeViewModel
+@{
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="container mt-4">
+    @if (Model.IsAuthenticated)
+    {
+        <div class="row">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h4 class="mb-0">
+                            <i class="fas fa-user"></i> Welcome back, @Model.FirstName!
+                        </h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h5>Personal Information</h5>
+                                <p><strong>Name:</strong> @Model.FirstName @Model.Surname</p>
+                                <p><strong>Email:</strong> @Model.Email</p>
+                            </div>
+                            <div class="col-md-6">
+                                <h5>Your Skills</h5>
+                                @if (Model.UserSkills.Any())
+                                {
+                                    <div class="list-group">
+                                        @foreach (var skill in Model.UserSkills)
+                                        {
+                                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                                <span>@skill.SkillName</span>
+                                                <span class="badge bg-primary rounded-pill">Level @skill.SkillLevel</span>
+                                            </div>
+                                        }
+                                    </div>
+                                }
+                                else
+                                {
+                                    <p class="text-muted">No skills assigned yet.</p>
+                                    <a href="/Courses" class="btn btn-outline-primary btn-sm">Browse Courses</a>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="text-center">
+            <h1 class="display-4">Welcome to Education Portal</h1>
+            <p class="lead">Enhance your skills with our comprehensive learning platform.</p>
+            <div class="mt-4">
+                <a href="/Identity/Account/Login" class="btn btn-primary btn-lg me-3">
+                    <i class="fas fa-sign-in-alt"></i> Login
+                </a>
+                <a href="/Identity/Account/Register" class="btn btn-outline-primary btn-lg">
+                    <i class="fas fa-user-plus"></i> Register
+                </a>
+            </div>
+        </div>
+    }
 </div>

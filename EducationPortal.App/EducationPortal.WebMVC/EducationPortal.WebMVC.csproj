@@ -13,11 +13,27 @@
         <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.16"/>
         <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="8.0.16"/>
         <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.16"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.20" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.16"/>
+        <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.7" />
     </ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\EducationPortal.Logic\EducationPortal.Logic.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="Areas\Identity\Pages\Account\Login.cshtml" />
+      <_ContentIncludedByDefault Remove="Areas\Identity\Pages\Account\Manage\Index.cshtml" />
+      <_ContentIncludedByDefault Remove="Areas\Identity\Pages\Account\Manage\PersonalData.cshtml" />
+      <_ContentIncludedByDefault Remove="Areas\Identity\Pages\Account\Manage\_Layout.cshtml" />
+      <_ContentIncludedByDefault Remove="Areas\Identity\Pages\Account\Manage\_ManageNav.cshtml" />
+      <_ContentIncludedByDefault Remove="Areas\Identity\Pages\Account\Manage\_ViewImports.cshtml" />
+      <_ContentIncludedByDefault Remove="Areas\Identity\Pages\Account\Register.cshtml" />
+      <_ContentIncludedByDefault Remove="Areas\Identity\Pages\Account\_ViewImports.cshtml" />
+      <_ContentIncludedByDefault Remove="Areas\Identity\Pages\_ValidationScriptsPartial.cshtml" />
+      <_ContentIncludedByDefault Remove="Areas\Identity\Pages\_ViewImports.cshtml" />
+      <_ContentIncludedByDefault Remove="Areas\Identity\Pages\_ViewStart.cshtml" />
     </ItemGroup>
 
 </Project>

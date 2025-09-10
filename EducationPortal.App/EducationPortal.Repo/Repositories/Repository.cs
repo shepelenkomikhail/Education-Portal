@@ -5,7 +5,7 @@ using System.Linq.Expressions;
 
 namespace EducationPortal.Data.Repo.Repositories;
 
-public class Repository<T, TId> : IRepository<T, TId> where T : BaseEntity<TId>
+public class Repository<T, TId> : IRepository<T, TId> where T : class, IBaseEntity<TId>
 {
     protected readonly PortalDbContext context;
 
@@ -15,6 +15,11 @@ public class Repository<T, TId> : IRepository<T, TId> where T : BaseEntity<TId>
     }
     
     public IQueryable<T> GetAll()
+    {
+        return context.Set<T>();
+    }
+
+    public IQueryable<T> GetQueryable()
     {
         return context.Set<T>();
     }

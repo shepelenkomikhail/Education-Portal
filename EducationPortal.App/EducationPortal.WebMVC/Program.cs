@@ -20,18 +20,30 @@ public class Program
         builder.Services.AddDbContext<PortalDbContext>(options =>
             options.UseSqlite(connectionString));
         builder.Services.AddDatabaseDeveloperPageExceptionFilter();
-
-        builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-            .AddEntityFrameworkStores<PortalDbContext>();
+        
         builder.Services.AddControllersWithViews();
         
         builder.Services.AddDataProtection()
             .PersistKeysToDbContext<PortalDbContext>()
             .SetApplicationName("EducationPortal");
-        
-        builder.Services.AddScoped<PortalDbContext>();
 
-        // Register the new generic UnitOfWork pattern
+        builder.Services
+            .AddIdentity<User, IdentityRole<int>>(options =>
+            {
+                options.SignIn.RequireConfirmedEmail = false;
+                options.SignIn.RequireConfirmedAccount = false;
+
+                options.Password.RequireDigit = false;
+                options.Password.RequiredLength = 6;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequireUppercase = false;
+                options.Password.RequireLowercase = false;
+            })
+            .AddEntityFrameworkStores<PortalDbContext>()
+            .AddDefaultTokenProviders()
+            .AddDefaultUI();
+        builder.Services.AddScoped<IUserClaimsPrincipalFactory<User>, Services.CustomUserClaimsPrincipalFactory>();
+        
         builder.Services.AddScoped<IRepositoryFactory, RepositoryFactory>();
         builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 

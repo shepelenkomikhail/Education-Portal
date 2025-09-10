@@ -19,7 +19,7 @@ public class UnitOfWork : IUnitOfWork
         this.repositoryFactory = repositoryFactory;
     }
 
-    public IRepository<T, TId> Repository<T, TId>() where T : BaseEntity<TId>
+    public IRepository<T, TId> Repository<T, TId>() where T : class, IBaseEntity<TId>
     {
         var type = typeof(T);
 
