@@ -1,10 +1,12 @@
 using EducationPortal.Data.Models.EntityConfigurations;
 using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace EducationPortal.Data.Models;
 
-public class PortalDbContext : DbContext, IDataProtectionKeyContext
+public class PortalDbContext : IdentityDbContext<User, IdentityRole<int>, int>, IDataProtectionKeyContext
 {
     private string connectionString;
     public virtual DbSet<User> Users { get; set; }
@@ -45,6 +47,8 @@ public class PortalDbContext : DbContext, IDataProtectionKeyContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        base.OnModelCreating(modelBuilder);
+
         modelBuilder.Entity<Book>().ToTable("Books");
         modelBuilder.Entity<Video>().ToTable("Videos");
         modelBuilder.Entity<Article>().ToTable("Articles");

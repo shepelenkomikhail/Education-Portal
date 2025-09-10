@@ -13,7 +13,7 @@ public class RepositoryFactory : IRepositoryFactory
         this.context = context;
     }
 
-    public IRepository<T, TId> GetRepository<T, TId>() where T : BaseEntity<TId>
+    public IRepository<T, TId> GetRepository<T, TId>() where T : class, IBaseEntity<TId>
     {
         return new Repository<T, TId>(context);
     }
