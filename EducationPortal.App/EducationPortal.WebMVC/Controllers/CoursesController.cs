@@ -3,6 +3,9 @@ using EducationPortal.Logic.Interfaces;
 using EducationPortal.WebMVC.Models;
 using WebMVC.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Identity;
+using EducationPortal.Data.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace WebMVC.Controllers
 {
@@ -11,214 +14,208 @@ namespace WebMVC.Controllers
         private readonly ICourseService courseService;
         private readonly ISkillService skillService;
         private readonly IMaterialService materialService;
+        private readonly IUserService userService;
+        private readonly UserManager<User> userManager;
 
-        public CoursesController(ICourseService courseService, IMaterialService materialService, ISkillService skillService)
+        public CoursesController(ICourseService courseService, IMaterialService materialService, ISkillService skillService, IUserService userService, UserManager<User> userManager)
         {
             this.courseService = courseService;
             this.materialService = materialService;
             this.skillService = skillService;
+            this.userService = userService;
+            this.userManager = userManager;
         }
 
         // GET: CoursesController
         public async Task<ActionResult> Index()
         {
-            var courses = await courseService.GetAllAsync();
-            var courseModels = courses.Select(c => new CourseModel 
-            { 
-                Id = c.Id, 
-                Name = c.Name, 
-                Description = c.Description 
-            }).ToList();
-            
-            return View(courseModels);
+            bool isAdmin = false;
+            int? currentUserId = null;
+
+            if (User.Identity?.IsAuthenticated == true)
+            {
+                isAdmin = User.IsInRole("Admin");
+                var user = await userManager.GetUserAsync(User);
+                currentUserId = user?.Id;
+            }
+
+            var data = await courseService.GetCoursesWithPermissionsAsync(currentUserId, isAdmin);
+
+            var viewModel = new CourseIndexViewModel
+            {
+                Courses = data.Courses.Select(c => new CourseWithPermissionsModel
+                {
+                    Id = c.Id,
+                    Name = c.Name,
+                    Description = c.Description,
+                    CreatedByUserId = c.CreatedByUserId,
+                    CanEdit = c.CanEdit
+                }).ToList(),
+                IsAdmin = data.IsAdmin,
+                CurrentUserId = data.CurrentUserId
+            };
+
+            return View(viewModel);
         }
 
         // GET: CoursesController/Details/5
         public async Task<ActionResult> Details(int id)
         {
-            var course = await courseService.GetByIdAsync(id);
-            var skills = await courseService.GetSkillsForCourse(id);
-            var materials = await courseService.GetMaterialsForCourse(id);
-            var books = materials.OfType<BookDTO>().ToList();
-            var articles = materials.OfType<ArticleDTO>().ToList();
-            var videos = materials.OfType<VideoDTO>().ToList();
+            int? userId = null;
+            if (User.Identity.IsAuthenticated)
+            {
+                var user = await userManager.GetUserAsync(User);
+                userId = user?.Id;
+            }
+
+            var data = await courseService.GetCourseDetailsWithUserDataAsync(id, userId);
+
             var courseModel = new CourseDetailsModel
             {
-                Id = course.Id,
-                Name = course.Name,
-                Description = course.Description,
-                Skills = skills.Select(s => new SkillModel { Id = s.Id, Name = s.Name }).ToList(),
-                Materials = materials.Select(m => new MaterialModel { Id = m.Id, Title = m.Title }).ToList(),
-                Books = books.Select(b => new BookModel { Id = b.Id, Title = b.Title, Author = b.Author, PageAmount = b.PageAmount, Formant = b.Formant, PublicationDate = b.PublicationDate }).ToList(),
-                Articles = articles.Select(a => new ArticleModel { Id = a.Id, Title = a.Title, Date = a.Date, Resource = a.Resource }).ToList(),
-                Videos = videos.Select(v => new VideoModel { Id = v.Id, Title = v.Title, Duration = v.Duration, Quality = v.Quality }).ToList()
+                Id = data.Id,
+                Name = data.Name,
+                Description = data.Description,
+                Skills = data.Skills.Select(s => new SkillModel { Id = s.Id, Name = s.Name }).ToList(),
+                Materials = data.Materials.Select(m => new MaterialModel { Id = m.Id, Title = m.Title }).ToList(),
+                Books = data.Books.Select(b => new BookModel { Id = b.Id, Title = b.Title, Author = b.Author, PageAmount = b.PageAmount, Formant = b.Formant, PublicationDate = b.PublicationDate }).ToList(),
+                Articles = data.Articles.Select(a => new ArticleModel { Id = a.Id, Title = a.Title, Date = a.Date, Resource = a.Resource }).ToList(),
+                Videos = data.Videos.Select(v => new VideoModel { Id = v.Id, Title = v.Title, Duration = v.Duration, Quality = v.Quality }).ToList(),
+                IsUserEnrolled = data.IsUserEnrolled,
+                CompletionPercentage = data.CompletionPercentage,
+                CompletedMaterialIds = data.CompletedMaterialIds
             };
             return View(courseModel);
         }
 
         // GET: CoursesController/Create
+        [Authorize]
         public async Task<ActionResult> Create()
         {
-            var skills = await skillService.GetAllAsync();
-            var skillModels = skills.Select(s => new SkillModel() { Id = s.Id, Name = s.Name });
-            var materials = await materialService.GetAllAsync();
-            var materialModels = materials.Select(m => new MaterialModel() { Id = m.Id, Title = m.Title });
+            var data = await courseService.GetCourseCreateDataAsync();
             var viewModel = new CourseCreateViewModel
             {
-                Skills = skillModels.ToList(),
-                Materials = materialModels.ToList()
+                Skills = data.Skills.Select(s => new SkillModel { Id = s.Id, Name = s.Name }).ToList(),
+                Materials = data.Materials.Select(m => new MaterialModel { Id = m.Id, Title = m.Title }).ToList()
             };
             return View(viewModel);
         }
 
         // POST: CoursesController/Create
         [HttpPost]
+        [Authorize]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Create(CourseCreateViewModel model)
         {
-            var selectedSkillIds = new List<int>(model.SelectedSkillIds ?? new List<int>());
-            var selectedMaterialIds = new List<int>(model.SelectedMaterialIds ?? new List<int>());
-            
-            if (model.NewSkills != null)
+            if (!ModelState.IsValid)
             {
-                foreach (var newSkill in model.NewSkills)
-                {
-                    if (!string.IsNullOrWhiteSpace(newSkill?.Name))
-                    {
-                        var skillDto = new SkillDTO { Name = newSkill.Name };
-                        var skillCreated = await skillService.InsertAsync(skillDto);
-                        if (skillCreated)
-                        {
-                            var createdSkill = await skillService.GetByNameAsync(newSkill.Name);
-                            if (createdSkill != null)
-                            {
-                                selectedSkillIds.Add(createdSkill.Id);
-                            }
-                        }
-                    }
-                }
-            }
-            
-            if (model.NewMaterials != null)
-            {
-                foreach (var newMaterial in model.NewMaterials)
-                {
-                    if (!string.IsNullOrWhiteSpace(newMaterial?.Title) && !string.IsNullOrWhiteSpace(newMaterial?.MaterialType))
-                    {
-                        var materialDto = CreateMaterialDto(newMaterial);
-                        if (materialDto != null)
-                        {
-                            var materialCreated = await materialService.InsertAsync(materialDto);
-                            if (materialCreated)
-                            {
-                                var createdMaterial = await materialService.GetByTitleAsync(newMaterial.Title);
-                                if (createdMaterial != null)
-                                {
-                                    selectedMaterialIds.Add(createdMaterial.Id);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            
-            if (selectedSkillIds.Count == 0)
-            {
-                ModelState.AddModelError("SelectedSkillIds", "Please select at least one skill or create a new one");
-            }
-            if (selectedMaterialIds.Count == 0)
-            {
-                ModelState.AddModelError("SelectedMaterialIds", "Please select at least one material or create a new one");
+                var fallbackData = await courseService.GetCourseCreateDataAsync();
+                model.Skills = fallbackData.Skills.Select(s => new SkillModel { Id = s.Id, Name = s.Name }).ToList();
+                model.Materials = fallbackData.Materials.Select(m => new MaterialModel { Id = m.Id, Title = m.Title }).ToList();
+                return View(model);
             }
 
-            if (ModelState.IsValid)
+            var user = await userManager.GetUserAsync(User);
+            if (user == null)
             {
-                var courseDto = new CourseDTO { Name = model.Name, Description = model.Description };
-                bool result = await courseService.InsertWithRelationsAsync(courseDto, selectedSkillIds, selectedMaterialIds);
-                if (result)
-                {
-                    return RedirectToAction(nameof(Index));
-                }
-                ModelState.AddModelError("", "Failed to create course with relationships");
+                ModelState.AddModelError("", "User not found. Please log in again.");
+                return View(model);
             }
-            
-            var skills = await skillService.GetAllAsync();
-            var materials = await materialService.GetAllAsync();
-            var viewModel = new CourseCreateViewModel
+
+            var request = new CourseCreateRequestDTO
             {
                 Name = model.Name,
                 Description = model.Description,
-                Skills = skills.Select(s => new SkillModel { Id = s.Id, Name = s.Name }).ToList(),
-                Materials = materials.Select(m => new MaterialModel { Id = m.Id, Title = m.Title }).ToList(),
-                NewSkills = model.NewSkills ?? new List<NewSkillModel>(),
-                NewMaterials = model.NewMaterials ?? new List<NewMaterialModel>()
+                CreatedByUserId = user.Id,
+                SelectedSkillIds = model.SelectedSkillIds ?? new List<int>(),
+                SelectedMaterialIds = model.SelectedMaterialIds ?? new List<int>(),
+                NewSkills = model.NewSkills?.Select(ns => new NewSkillRequestDTO { Name = ns.Name }).ToList() ?? new List<NewSkillRequestDTO>(),
+                NewMaterials = model.NewMaterials?.Select(nm => new NewMaterialRequestDTO
+                {
+                    Title = nm.Title ?? string.Empty,
+                    MaterialType = nm.MaterialType ?? string.Empty,
+                    Author = nm.Author,
+                    PageAmount = nm.PageAmount,
+                    Formant = nm.Formant,
+                    PublicationDate = nm.PublicationDate,
+                    Duration = nm.Duration,
+                    Quality = nm.Quality,
+                    Date = nm.Date,
+                    Resource = nm.Resource
+                }).ToList() ?? new List<NewMaterialRequestDTO>()
             };
-            return View(viewModel);
+
+            var result = await courseService.CreateCourseWithNewItemsAsync(request);
+
+            if (result.Success)
+            {
+                return RedirectToAction(nameof(Index));
+            }
+
+            foreach (var error in result.ValidationErrors)
+            {
+                ModelState.AddModelError("", error);
+            }
+
+            if (!string.IsNullOrEmpty(result.ErrorMessage))
+            {
+                ModelState.AddModelError("", result.ErrorMessage);
+            }
+
+            if (result.FallbackData != null)
+            {
+                model.Skills = result.FallbackData.Skills.Select(s => new SkillModel { Id = s.Id, Name = s.Name }).ToList();
+                model.Materials = result.FallbackData.Materials.Select(m => new MaterialModel { Id = m.Id, Title = m.Title }).ToList();
+            }
+
+            return View(model);
         }
 
-        private MaterialDTO? CreateMaterialDto(NewMaterialModel newMaterial)
-        {
-            if (string.IsNullOrWhiteSpace(newMaterial.MaterialType) || string.IsNullOrWhiteSpace(newMaterial.Title))
-                return null;
-                
-            return newMaterial.MaterialType.ToLower() switch
-            {
-                "book" => new BookDTO
-                {
-                    Title = newMaterial.Title ?? string.Empty,
-                    Author = newMaterial.Author ?? string.Empty,
-                    PageAmount = newMaterial.PageAmount ?? 0,
-                    Formant = newMaterial.Formant ?? string.Empty,
-                    PublicationDate = newMaterial.PublicationDate ?? DateTime.Now
-                },
-                "video" => new VideoDTO
-                {
-                    Title = newMaterial.Title ?? string.Empty,
-                    Duration = newMaterial.Duration ?? 0,
-                    Quality = newMaterial.Quality ?? 0
-                },
-                "article" => new ArticleDTO
-                {
-                    Title = newMaterial.Title ?? string.Empty,
-                    Date = newMaterial.Date ?? DateTime.Now,
-                    Resource = newMaterial.Resource ?? string.Empty
-                },
-                _ => null
-            };
-        }
+
 
         // GET: CoursesController/Edit/5
+        [Authorize]
         public async Task<ActionResult> Edit(int id)
         {
-            var course = await courseService.GetByIdAsync(id);
-            if (course == null)
+            var user = await userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return Unauthorized();
+            }
+
+            bool isAdmin = User.IsInRole("Admin");
+
+            try
+            {
+                var data = await courseService.GetCourseEditDataAsync(id, user.Id, isAdmin);
+
+                var viewModel = new CourseCreateViewModel
+                {
+                    Id = data.Course.Id,
+                    Name = data.Course.Name,
+                    Description = data.Course.Description,
+                    Skills = data.Skills.Select(s => new SkillModel { Id = s.Id, Name = s.Name }).ToList(),
+                    Materials = data.Materials.Select(m => new MaterialModel { Id = m.Id, Title = m.Title }).ToList(),
+                    SelectedSkillIds = data.CourseSkills.Select(s => s.Id).ToList(),
+                    SelectedMaterialIds = data.CourseMaterials.Select(m => m.Id).ToList(),
+                    NewSkills = new List<NewSkillModel>(),
+                    NewMaterials = new List<NewMaterialModel>()
+                };
+
+                return View(viewModel);
+            }
+            catch (ArgumentException)
             {
                 return NotFound();
             }
-
-            var skills = await skillService.GetAllAsync();
-            var materials = await materialService.GetAllAsync();
-            var courseSkills = await courseService.GetSkillsForCourse(id);
-            var courseMaterials = await courseService.GetMaterialsForCourse(id);
-            
-            var viewModel = new CourseCreateViewModel
+            catch (UnauthorizedAccessException)
             {
-                Id = course.Id,
-                Name = course.Name,
-                Description = course.Description,
-                Skills = skills.Select(s => new SkillModel { Id = s.Id, Name = s.Name }).ToList(),
-                Materials = materials.Select(m => new MaterialModel { Id = m.Id, Title = m.Title }).ToList(),
-                SelectedSkillIds = courseSkills.Select(s => s.Id).ToList(),
-                SelectedMaterialIds = courseMaterials.Select(m => m.Id).ToList(),
-                NewSkills = new List<NewSkillModel>(),
-                NewMaterials = new List<NewMaterialModel>()
-            };
-            
-            return View(viewModel);
+                return Forbid();
+            }
         }
 
         // POST: CoursesController/Edit/5
         [HttpPost]
+        [Authorize]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Edit(int id, CourseCreateViewModel model)
         {
@@ -227,85 +224,81 @@ namespace WebMVC.Controllers
                 return NotFound();
             }
 
-            var selectedSkillIds = new List<int>(model.SelectedSkillIds ?? new List<int>());
-            var selectedMaterialIds = new List<int>(model.SelectedMaterialIds ?? new List<int>());
-            
-            if (model.NewSkills != null)
+            if (!ModelState.IsValid)
             {
-                foreach (var newSkill in model.NewSkills)
+                try
                 {
-                    if (!string.IsNullOrWhiteSpace(newSkill?.Name))
-                    {
-                        var skillDto = new SkillDTO { Name = newSkill.Name };
-                        var skillCreated = await skillService.InsertAsync(skillDto);
-                        if (skillCreated)
-                        {
-                            var createdSkill = await skillService.GetByNameAsync(newSkill.Name);
-                            if (createdSkill != null)
-                            {
-                                selectedSkillIds.Add(createdSkill.Id);
-                            }
-                        }
-                    }
+                    var user = await userManager.GetUserAsync(User);
+                    if (user == null) return Unauthorized();
+
+                    bool isAdmin = User.IsInRole("Admin");
+                    var fallbackData = await courseService.GetCourseEditDataAsync(id, user.Id, isAdmin);
+
+                    model.Skills = fallbackData.Skills.Select(s => new SkillModel { Id = s.Id, Name = s.Name }).ToList();
+                    model.Materials = fallbackData.Materials.Select(m => new MaterialModel { Id = m.Id, Title = m.Title }).ToList();
                 }
-            }
-            
-            if (model.NewMaterials != null)
-            {
-                foreach (var newMaterial in model.NewMaterials)
+                catch
                 {
-                    if (!string.IsNullOrWhiteSpace(newMaterial?.Title) && !string.IsNullOrWhiteSpace(newMaterial?.MaterialType))
-                    {
-                        var materialDto = CreateMaterialDto(newMaterial);
-                        if (materialDto != null)
-                        {
-                            var materialCreated = await materialService.InsertAsync(materialDto);
-                            if (materialCreated)
-                            {
-                                var createdMaterial = await materialService.GetByTitleAsync(newMaterial.Title);
-                                if (createdMaterial != null)
-                                {
-                                    selectedMaterialIds.Add(createdMaterial.Id);
-                                }
-                            }
-                        }
-                    }
+                    return NotFound();
                 }
-            }
-            
-            if (selectedSkillIds.Count == 0)
-            {
-                ModelState.AddModelError("SelectedSkillIds", "Please select at least one skill or create a new one");
-            }
-            if (selectedMaterialIds.Count == 0)
-            {
-                ModelState.AddModelError("SelectedMaterialIds", "Please select at least one material or create a new one");
+                return View(model);
             }
 
-            if (ModelState.IsValid)
+            var currentUser = await userManager.GetUserAsync(User);
+            if (currentUser == null)
             {
-                var courseDto = new CourseDTO { Id = model.Id, Name = model.Name, Description = model.Description };
-                bool result = await courseService.UpdateWithRelationsAsync(courseDto, selectedSkillIds, selectedMaterialIds);
-                if (result)
-                {
-                    return RedirectToAction(nameof(Index));
-                }
-                ModelState.AddModelError("", "Failed to update course");
+                return Unauthorized();
             }
-            
-            var skills = await skillService.GetAllAsync();
-            var materials = await materialService.GetAllAsync();
-            var viewModel = new CourseCreateViewModel
+
+            var request = new CourseEditRequestDTO
             {
                 Id = model.Id,
                 Name = model.Name,
                 Description = model.Description,
-                Skills = skills.Select(s => new SkillModel { Id = s.Id, Name = s.Name }).ToList(),
-                Materials = materials.Select(m => new MaterialModel { Id = m.Id, Title = m.Title }).ToList(),
-                NewSkills = model.NewSkills ?? new List<NewSkillModel>(),
-                NewMaterials = model.NewMaterials ?? new List<NewMaterialModel>()
+                UserId = currentUser.Id,
+                IsAdmin = User.IsInRole("Admin"),
+                SelectedSkillIds = model.SelectedSkillIds ?? new List<int>(),
+                SelectedMaterialIds = model.SelectedMaterialIds ?? new List<int>(),
+                NewSkills = model.NewSkills?.Select(ns => new NewSkillRequestDTO { Name = ns.Name }).ToList() ?? new List<NewSkillRequestDTO>(),
+                NewMaterials = model.NewMaterials?.Select(nm => new NewMaterialRequestDTO
+                {
+                    Title = nm.Title ?? string.Empty,
+                    MaterialType = nm.MaterialType ?? string.Empty,
+                    Author = nm.Author,
+                    PageAmount = nm.PageAmount,
+                    Formant = nm.Formant,
+                    PublicationDate = nm.PublicationDate,
+                    Duration = nm.Duration,
+                    Quality = nm.Quality,
+                    Date = nm.Date,
+                    Resource = nm.Resource
+                }).ToList() ?? new List<NewMaterialRequestDTO>()
             };
-            return View(viewModel);
+
+            var result = await courseService.UpdateCourseWithNewItemsAsync(request);
+
+            if (result.Success)
+            {
+                return RedirectToAction(nameof(Index));
+            }
+
+            foreach (var error in result.ValidationErrors)
+            {
+                ModelState.AddModelError("", error);
+            }
+
+            if (!string.IsNullOrEmpty(result.ErrorMessage))
+            {
+                ModelState.AddModelError("", result.ErrorMessage);
+            }
+
+            if (result.FallbackData != null)
+            {
+                model.Skills = result.FallbackData.Skills.Select(s => new SkillModel { Id = s.Id, Name = s.Name }).ToList();
+                model.Materials = result.FallbackData.Materials.Select(m => new MaterialModel { Id = m.Id, Title = m.Title }).ToList();
+            }
+
+            return View(model);
         }
 
         // GET: CoursesController/Delete/5
@@ -317,11 +310,11 @@ namespace WebMVC.Controllers
         // POST: CoursesController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        public async Task<ActionResult> Delete(int id, IFormCollection collection)
         {
             try
             {
-                courseService.DeleteAsync(id);
+                await courseService.DeleteAsync(id);
                 return RedirectToAction(nameof(Index));
             }
             catch
@@ -336,7 +329,7 @@ namespace WebMVC.Controllers
         {
             try
             {
-                var material = await materialService.GetByIdAsync(materialId);
+                var material = await courseService.GetMaterialDetailsAsync(materialId, materialType);
                 if (material == null)
                 {
                     return PartialView("_ErrorMessage", "Material not found.");
@@ -373,6 +366,120 @@ namespace WebMVC.Controllers
             catch (Exception)
             {
                 return PartialView("_ErrorMessage", "Error loading material details.");
+            }
+        }
+
+        // POST: CoursesController/Enroll/5
+        [HttpPost]
+        [Authorize]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> Enroll(int id)
+        {
+            try
+            {
+                var user = await userManager.GetUserAsync(User);
+                if (user == null)
+                {
+                    return Json(new { success = false, message = "User not found." });
+                }
+
+                var course = await courseService.GetByIdAsync(id);
+                if (course == null)
+                {
+                    return Json(new { success = false, message = "Course not found." });
+                }
+                
+                if (await userService.IsUserEnrolledInCourseAsync(user.Id, id))
+                {
+                    return Json(new { success = false, message = "You are already enrolled in this course." });
+                }
+                
+                bool enrollmentResult = await userService.EnrollUserInCourseAsync(user.Id, id);
+
+                return Json(enrollmentResult ? new { success = true, message = "Successfully enrolled in the course!" }
+                    : new { success = false, message = "Failed to enroll in the course. Please try again." });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "An error occurred while enrolling in the course." });
+            }
+        }
+
+        // POST: CoursesController/MarkMaterialCompleted
+        [HttpPost]
+        [Authorize]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> MarkMaterialCompleted(int courseId, int materialId)
+        {
+            try
+            {
+                var user = await userManager.GetUserAsync(User);
+                if (user == null)
+                {
+                    return Json(new { success = false, message = "User not found." });
+                }
+                
+                if (!await userService.IsUserEnrolledInCourseAsync(user.Id, courseId))
+                {
+                    return Json(new { success = false, message = "You are not enrolled in this course." });
+                }
+                
+                bool result = await userService.MarkMaterialAsCompletedAsync(user.Id, courseId, materialId);
+
+                if (result)
+                {
+                    int newProgress = await userService.GetCourseProgressAsync(user.Id, courseId);
+                    string message = "Material marked as completed!";
+                    if (newProgress == 100)
+                    {
+                        message = "🎉 Congratulations! You've completed this course and earned new skills!";
+                    }
+
+                    return Json(new {
+                        success = true,
+                        message = message,
+                        newProgress = newProgress,
+                        courseCompleted = newProgress == 100
+                    });
+                }
+                else
+                {
+                    return Json(new { success = false, message = "Failed to mark material as completed." });
+                }
+            }
+            catch (Exception)
+            {
+                return Json(new { success = false, message = "An error occurred while updating progress." });
+            }
+        }
+
+        // POST: CoursesController/UpdateProgress
+        [HttpPost]
+        [Authorize]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> UpdateProgress(int courseId, int progress)
+        {
+            try
+            {
+                var user = await userManager.GetUserAsync(User);
+                if (user == null)
+                {
+                    return Json(new { success = false, message = "User not found." });
+                }
+                
+                if (!await userService.IsUserEnrolledInCourseAsync(user.Id, courseId))
+                {
+                    return Json(new { success = false, message = "You are not enrolled in this course." });
+                }
+                
+                bool result = await userService.UpdateCourseProgressAsync(user.Id, courseId, progress);
+
+                return Json(result ? new { success = true, message = "Progress updated successfully!" } 
+                    : new { success = false, message = "Failed to update progress." });
+            }
+            catch (Exception)
+            {
+                return Json(new { success = false, message = "An error occurred while updating progress." });
             }
         }
     }

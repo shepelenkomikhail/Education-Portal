@@ -18,6 +18,7 @@ public class PortalDbContext : IdentityDbContext<User, IdentityRole<int>, int>, 
     public virtual DbSet<Article> Articles { get; set; }
     public virtual DbSet<UserCourse> UserCourses { get; set; }
     public virtual DbSet<UserSkill> UserSkills { get; set; }
+    public virtual DbSet<UserMaterial> UserMaterials { get; set; }
 
     public PortalDbContext() { }
     
@@ -55,6 +56,7 @@ public class PortalDbContext : IdentityDbContext<User, IdentityRole<int>, int>, 
         
         modelBuilder.Entity<UserCourse>().HasKey(uc => new { uc.UserId, uc.CourseId });
         modelBuilder.Entity<UserSkill>().HasKey(uc => new { uc.UserId, uc.SkillId });
+        modelBuilder.Entity<UserMaterial>().HasKey(um => new { um.UserId, um.MaterialId });
         
         modelBuilder.ApplyConfiguration(new SkillConfiguration());
         modelBuilder.ApplyConfiguration(new UserConfiguration());
@@ -64,5 +66,7 @@ public class PortalDbContext : IdentityDbContext<User, IdentityRole<int>, int>, 
         modelBuilder.ApplyConfiguration(new ArticleConfiguration());
         modelBuilder.ApplyConfiguration(new UserCourseConfiguration());
         modelBuilder.ApplyConfiguration(new UserSkillConfiguration());
+        modelBuilder.ApplyConfiguration(new RoleConfiguration());
+        modelBuilder.ApplyConfiguration(new UserRoleConfiguration());
     }
 }
