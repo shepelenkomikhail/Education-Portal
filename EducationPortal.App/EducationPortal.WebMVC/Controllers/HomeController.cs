@@ -4,21 +4,20 @@ using EducationPortal.WebMVC.Models;
 using EducationPortal.Logic.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using EducationPortal.Data.Models;
-using Microsoft.EntityFrameworkCore;
 
 namespace EducationPortal.WebMVC.Controllers;
 
 public class HomeController : Controller
 {
-    private readonly ILogger<HomeController> _logger;
-    private readonly UserManager<User> _userManager;
-    private readonly PortalDbContext _context;
+    private readonly ILogger<HomeController> logger;
+    private readonly UserManager<User> userManager;
+    private readonly IUserService userService;
 
-    public HomeController(ILogger<HomeController> logger, UserManager<User> userManager, PortalDbContext context)
+    public HomeController(ILogger<HomeController> logger, UserManager<User> userManager, IUserService userService)
     {
-        _logger = logger;
-        _userManager = userManager;
-        _context = context;
+        this.logger = logger;
+        this.userManager = userManager;
+        this.userService = userService;
     }
 
     public async Task<IActionResult> Index()
@@ -27,23 +26,62 @@ public class HomeController : Controller
 
         if (User.Identity?.IsAuthenticated == true)
         {
-            var user = await _userManager.GetUserAsync(User);
+            var user = await userManager.GetUserAsync(User);
             if (user != null)
             {
                 viewModel.IsAuthenticated = true;
-                viewModel.FirstName = user.FirstName;
-                viewModel.Surname = user.Surname;
-                viewModel.Email = user.Email ?? string.Empty;
+                viewModel.IsAdmin = User.IsInRole("Admin");
+                
+                var dashboardData = await userService.GetUserDashboardDataAsync(user.Id);
+                
+                viewModel.FirstName = dashboardData.UserInfo.FirstName;
+                viewModel.Surname = dashboardData.UserInfo.Surname;
+                viewModel.Email = dashboardData.UserInfo.Email;
 
-                var userSkills = await _context.UserSkills
-                    .Include(us => us.Skill)
-                    .Where(us => us.UserId == user.Id)
-                    .ToListAsync();
-
-                viewModel.UserSkills = userSkills.Select(us => new UserSkillViewModel
+                viewModel.UserSkills = dashboardData.UserSkills.Select(us => new UserSkillViewModel
                 {
-                    SkillName = us.Skill.Name,
+                    SkillName = us.SkillName,
                     SkillLevel = us.SkillLevel
+                }).ToList();
+
+                viewModel.EnrolledCourses = dashboardData.EnrolledCourses.Select(ec => new UserCourseProgressViewModel
+                {
+                    CourseId = ec.CourseId,
+                    CourseName = ec.CourseName,
+                    CourseDescription = ec.CourseDescription,
+                    CompletionPercentage = ec.CompletionPercentage,
+                    TotalMaterials = ec.TotalMaterials,
+                    CompletedMaterials = ec.CompletedMaterials
+                }).ToList();
+
+                viewModel.InProgressCourses = dashboardData.InProgressCourses.Select(ic => new UserCourseProgressViewModel
+                {
+                    CourseId = ic.CourseId,
+                    CourseName = ic.CourseName,
+                    CourseDescription = ic.CourseDescription,
+                    CompletionPercentage = ic.CompletionPercentage,
+                    TotalMaterials = ic.TotalMaterials,
+                    CompletedMaterials = ic.CompletedMaterials
+                }).ToList();
+
+                viewModel.CompletedCourses = dashboardData.CompletedCourses.Select(cc => new UserCourseProgressViewModel
+                {
+                    CourseId = cc.CourseId,
+                    CourseName = cc.CourseName,
+                    CourseDescription = cc.CourseDescription,
+                    CompletionPercentage = cc.CompletionPercentage,
+                    TotalMaterials = cc.TotalMaterials,
+                    CompletedMaterials = cc.CompletedMaterials
+                }).ToList();
+
+                viewModel.CreatedCourses = dashboardData.CreatedCourses.Select(cc => new CreatedCourseViewModel
+                {
+                    CourseId = cc.CourseId,
+                    CourseName = cc.CourseName,
+                    CourseDescription = cc.CourseDescription,
+                    CreatedAt = cc.CreatedAt,
+                    EnrolledStudents = cc.EnrolledStudents,
+                    TotalMaterials = cc.TotalMaterials
                 }).ToList();
             }
         }

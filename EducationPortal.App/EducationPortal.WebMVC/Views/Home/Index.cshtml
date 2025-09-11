@@ -12,6 +12,12 @@
                     <div class="card-header bg-primary text-white">
                         <h4 class="mb-0">
                             <i class="fas fa-user"></i> Welcome back, @Model.FirstName!
+                            @if (Model.IsAdmin)
+                            {
+                                <span class="badge bg-warning text-dark ms-2">
+                                    <i class="fas fa-crown"></i> Hello Admin
+                                </span>
+                            }
                         </h4>
                     </div>
                     <div class="card-body">
@@ -44,6 +50,264 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Course Progress Section -->
+                <div class="col-md-12">
+                    <div class="card h-100">
+                        <div class="card-header bg-success text-white">
+                            <h5 class="mb-0">
+                                <i class="fas fa-graduation-cap me-2"></i>My Learning Dashboard
+                            </h5>
+                        </div>
+                        <div class="card-body p-0">
+                            <!-- Course Navigation Tabs -->
+                            <ul class="nav nav-tabs" id="coursesTabs" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link active" id="in-progress-tab" data-bs-toggle="tab" data-bs-target="#in-progress" type="button" role="tab">
+                                        <i class="fas fa-play-circle me-1"></i>In Progress
+                                        @if (Model.InProgressCourses.Any())
+                                        {
+                                            <span class="badge bg-primary ms-1">@Model.InProgressCourses.Count</span>
+                                        }
+                                    </button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="enrolled-tab" data-bs-toggle="tab" data-bs-target="#enrolled" type="button" role="tab">
+                                        <i class="fas fa-list me-1"></i>Enrolled
+                                        @if (Model.EnrolledCourses.Any())
+                                        {
+                                            <span class="badge bg-secondary ms-1">@Model.EnrolledCourses.Count</span>
+                                        }
+                                    </button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="completed-tab" data-bs-toggle="tab" data-bs-target="#completed" type="button" role="tab">
+                                        <i class="fas fa-check-circle me-1"></i>Completed
+                                        @if (Model.CompletedCourses.Any())
+                                        {
+                                            <span class="badge bg-success ms-1">@Model.CompletedCourses.Count</span>
+                                        }
+                                    </button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="browse-tab" data-bs-toggle="tab" data-bs-target="#browse" type="button" role="tab">
+                                        <i class="fas fa-search me-1"></i>Browse More
+                                    </button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="my-courses-tab" data-bs-toggle="tab" data-bs-target="#my-courses" type="button" role="tab">
+                                        <i class="fas fa-user-edit me-1"></i>My Courses
+                                        @if (Model.CreatedCourses.Any())
+                                        {
+                                            <span class="badge bg-info ms-1">@Model.CreatedCourses.Count</span>
+                                        }
+                                    </button>
+                                </li>
+                            </ul>
+
+                            <!-- Tab Content -->
+                            <div class="tab-content p-3" id="coursesTabContent">
+                                <!-- In Progress Tab -->
+                                <div class="tab-pane fade show active" id="in-progress" role="tabpanel">
+                                    @if (Model.InProgressCourses.Any())
+                                    {
+                                        @foreach (var course in Model.InProgressCourses)
+                                        {
+                                            <div class="mb-3 p-3 border rounded course-item">
+                                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                                    <h6 class="mb-1">
+                                                        <a href="/Courses/Details/@course.CourseId" class="text-decoration-none">
+                                                            @course.CourseName
+                                                        </a>
+                                                    </h6>
+                                                    <span class="badge bg-warning">@course.CompletionPercentage%</span>
+                                                </div>
+                                                <div class="progress mb-2" style="height: 8px;">
+                                                    <div class="progress-bar bg-warning"
+                                                         role="progressbar"
+                                                         style="width: @course.CompletionPercentage%"
+                                                         aria-valuenow="@course.CompletionPercentage"
+                                                         aria-valuemin="0"
+                                                         aria-valuemax="100">
+                                                    </div>
+                                                </div>
+                                                <small class="text-muted">
+                                                    @course.CompletedMaterials of @course.TotalMaterials materials completed
+                                                </small>
+                                            </div>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <div class="text-center py-4">
+                                            <i class="fas fa-play-circle fa-3x text-muted mb-3"></i>
+                                            <p class="text-muted">No courses in progress.</p>
+                                            <p class="small text-muted">Start learning by enrolling in a course!</p>
+                                        </div>
+                                    }
+                                </div>
+
+                                <!-- Enrolled Tab -->
+                                <div class="tab-pane fade" id="enrolled" role="tabpanel">
+                                    @if (Model.EnrolledCourses.Any())
+                                    {
+                                        @foreach (var course in Model.EnrolledCourses)
+                                        {
+                                            <div class="mb-3 p-3 border rounded course-item">
+                                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                                    <h6 class="mb-1">
+                                                        <a href="/Courses/Details/@course.CourseId" class="text-decoration-none">
+                                                            @course.CourseName
+                                                        </a>
+                                                    </h6>
+                                                    <span class="badge @(course.CompletionPercentage == 100 ? "bg-success" : course.CompletionPercentage > 0 ? "bg-warning" : "bg-secondary")">
+                                                        @course.CompletionPercentage%
+                                                    </span>
+                                                </div>
+                                                <div class="progress mb-2" style="height: 8px;">
+                                                    <div class="progress-bar @(course.CompletionPercentage == 100 ? "bg-success" : course.CompletionPercentage > 0 ? "bg-warning" : "bg-secondary")"
+                                                         role="progressbar"
+                                                         style="width: @course.CompletionPercentage%"
+                                                         aria-valuenow="@course.CompletionPercentage"
+                                                         aria-valuemin="0"
+                                                         aria-valuemax="100">
+                                                    </div>
+                                                </div>
+                                                <small class="text-muted">
+                                                    @course.CompletedMaterials of @course.TotalMaterials materials completed
+                                                    @if (course.CompletionPercentage == 100)
+                                                    {
+                                                        <i class="fas fa-trophy text-warning ms-1"></i>
+                                                    }
+                                                </small>
+                                            </div>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <div class="text-center py-4">
+                                            <i class="fas fa-book-open fa-3x text-muted mb-3"></i>
+                                            <p class="text-muted">No courses enrolled yet.</p>
+                                            <a href="/Courses" class="btn btn-success">
+                                                <i class="fas fa-search me-1"></i>Explore Courses
+                                            </a>
+                                        </div>
+                                    }
+                                </div>
+
+                                <!-- Completed Tab -->
+                                <div class="tab-pane fade" id="completed" role="tabpanel">
+                                    @if (Model.CompletedCourses.Any())
+                                    {
+                                        @foreach (var course in Model.CompletedCourses)
+                                        {
+                                            <div class="mb-3 p-3 border rounded bg-light course-item">
+                                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                                    <h6 class="mb-1">
+                                                        <a href="/Courses/Details/@course.CourseId" class="text-decoration-none">
+                                                            @course.CourseName
+                                                        </a>
+                                                        <i class="fas fa-trophy text-warning ms-2"></i>
+                                                    </h6>
+                                                    <span class="badge bg-success">100%</span>
+                                                </div>
+                                                <div class="progress mb-2" style="height: 8px;">
+                                                    <div class="progress-bar bg-success"
+                                                         role="progressbar"
+                                                         style="width: 100%"
+                                                         aria-valuenow="100"
+                                                         aria-valuemin="0"
+                                                         aria-valuemax="100">
+                                                    </div>
+                                                </div>
+                                                <small class="text-success">
+                                                    <i class="fas fa-check me-1"></i>Course completed! All @course.TotalMaterials materials finished.
+                                                </small>
+                                            </div>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <div class="text-center py-4">
+                                            <i class="fas fa-trophy fa-3x text-muted mb-3"></i>
+                                            <p class="text-muted">No completed courses yet.</p>
+                                            <p class="small text-muted">Complete your enrolled courses to see them here!</p>
+                                        </div>
+                                    }
+                                </div>
+
+                                <!-- Browse More Tab -->
+                                <div class="tab-pane fade" id="browse" role="tabpanel">
+                                    <div class="text-center py-4">
+                                        <i class="fas fa-search fa-3x text-primary mb-3"></i>
+                                        <h6>Discover New Courses</h6>
+                                        <p class="text-muted mb-4">Expand your knowledge with our wide range of courses</p>
+                                        <div class="d-grid gap-2">
+                                            <a href="/Courses" class="btn btn-primary">
+                                                <i class="fas fa-book-open me-2"></i>Browse All Courses
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- My Courses Tab -->
+                                <div class="tab-pane fade" id="my-courses" role="tabpanel">
+                                    @if (Model.CreatedCourses.Any())
+                                    {
+                                        @foreach (var course in Model.CreatedCourses)
+                                        {
+                                            <div class="mb-3 p-3 border rounded course-item bg-light">
+                                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                                    <h6 class="mb-1">
+                                                        <a href="/Courses/Details/@course.CourseId" class="text-decoration-none">
+                                                            @course.CourseName
+                                                        </a>
+                                                        <i class="fas fa-crown text-warning ms-2" title="Created by you"></i>
+                                                    </h6>
+                                                    <div class="d-flex gap-2">
+                                                        <span class="badge bg-info">@course.EnrolledStudents students</span>
+                                                        <span class="badge bg-secondary">@course.TotalMaterials materials</span>
+                                                    </div>
+                                                </div>
+                                                <p class="text-muted mb-2 small">@course.CourseDescription</p>
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <small class="text-muted">
+                                                        <i class="fas fa-calendar me-1"></i>Created: @course.CreatedAt.ToString("MMM dd, yyyy")
+                                                    </small>
+                                                    <div class="btn-group btn-group-sm" role="group">
+                                                        <a href="/Courses/Edit/@course.CourseId" class="btn btn-outline-primary">
+                                                            <i class="fas fa-edit me-1"></i>Edit
+                                                        </a>
+                                                        <a href="/Courses/Details/@course.CourseId" class="btn btn-outline-info">
+                                                            <i class="fas fa-eye me-1"></i>View
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
+                                        <div class="mt-3 text-center">
+                                            <a href="/Courses/Create" class="btn btn-success">
+                                                <i class="fas fa-plus me-2"></i>Create New Course
+                                            </a>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="text-center py-4">
+                                            <i class="fas fa-user-edit fa-3x text-info mb-3"></i>
+                                            <h6>My Created Courses</h6>
+                                            <p class="text-muted mb-4">You haven't created any courses yet.</p>
+                                            <p class="small text-muted mb-4">Share your knowledge by creating and publishing your own courses!</p>
+                                            <a href="/Courses/Create" class="btn btn-success">
+                                                <i class="fas fa-plus me-2"></i>Create Your First Course
+                                            </a>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     }
@@ -63,3 +327,53 @@
         </div>
     }
 </div>
+
+<style>
+    .nav-tabs .nav-link {
+        border-radius: 0;
+        border: none;
+        border-bottom: 3px solid transparent;
+        color: #6c757d;
+        font-weight: 500;
+        padding: 12px 16px;
+        transition: all 0.3s ease;
+    }
+
+    .nav-tabs .nav-link:hover {
+        border-bottom-color: #dee2e6;
+        color: #495057;
+    }
+
+    .nav-tabs .nav-link.active {
+        background-color: transparent;
+        border-bottom-color: #28a745;
+        color: #28a745;
+        font-weight: 600;
+    }
+
+    .tab-content {
+        min-height: 300px;
+    }
+
+    .course-item {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .course-item:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    .badge {
+        font-size: 0.75em;
+    }
+
+    .progress {
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .progress-bar {
+        transition: width 0.6s ease;
+    }
+</style>

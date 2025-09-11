@@ -14,4 +14,5 @@ public abstract class Material : BaseEntity<int>
     public string Title { get; set; } = string.Empty;
     
     public virtual ICollection<Course> Courses { get; set; } = new HashSet<Course>();
+    public virtual ICollection<UserMaterial> UserMaterials { get; set; } = new HashSet<UserMaterial>();
 }

@@ -12,4 +12,7 @@ public class CourseDetailsModel
     public List<BookModel> Books { get; set; } = new();
     public List<ArticleModel> Articles { get; set; } = new();
     public List<VideoModel> Videos { get; set; } = new();
+    public bool IsUserEnrolled { get; set; } = false;
+    public int CompletionPercentage { get; set; } = 0;
+    public List<int> CompletedMaterialIds { get; set; } = new();
 }

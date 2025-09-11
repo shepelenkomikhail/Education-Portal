@@ -4,6 +4,8 @@
     ViewData["Title"] = Model.Name;
 }
 
+@Html.AntiForgeryToken()
+
 <div class="container-fluid">
     <div class="row">
         <!-- Course Overview Section -->
@@ -49,6 +51,60 @@
                                     <span class="badge bg-info rounded-pill">@Model.Articles.Count</span>
                                 </div>
                             </div>
+
+                            @if (User.Identity.IsAuthenticated)
+                            {
+                                <div class="mt-4">
+                                    @if (Model.IsUserEnrolled)
+                                    {
+                                        <div class="card">
+                                            <div class="card-header bg-success text-white">
+                                                <i class="fas fa-graduation-cap me-2"></i>Course Progress
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="mb-3">
+                                                    <div class="d-flex justify-content-between mb-1">
+                                                        <span>Progress</span>
+                                                        <span id="progressText">@Model.CompletionPercentage%</span>
+                                                    </div>
+                                                    <div class="progress" style="height: 20px;">
+                                                        <div id="progressBar" class="progress-bar bg-success" role="progressbar"
+                                                             style="width: @Model.CompletionPercentage%"
+                                                             aria-valuenow="@Model.CompletionPercentage"
+                                                             aria-valuemin="0" aria-valuemax="100">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                @if (Model.CompletionPercentage == 100)
+                                                {
+                                                    <div class="alert alert-success mb-0" role="alert">
+                                                        <i class="fas fa-trophy me-2"></i>Congratulations! You've completed this course!
+                                                    </div>
+                                                }
+                                                else
+                                                {
+                                                    <small class="text-muted">Complete all materials to finish the course</small>
+                                                }
+                                            </div>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <button id="enrollBtn" class="btn btn-primary btn-lg w-100" onclick="enrollInCourse(@Model.Id)">
+                                            <i class="fas fa-user-plus me-2"></i>Enroll in Course
+                                        </button>
+                                    }
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="mt-4">
+                                    <div class="alert alert-info" role="alert">
+                                        <i class="fas fa-info-circle me-2"></i>
+                                        <a asp-area="Identity" asp-page="/Account/Login" class="alert-link">Login</a> to enroll in this course
+                                    </div>
+                                </div>
+                            }
                         </div>
                     </div>
                 </div>
@@ -76,15 +132,38 @@
                                 <div class="list-group">
                                     @foreach (var book in Model.Books)
                                     {
-                                        <button type="button" class="list-group-item list-group-item-action material-item" 
-                                                data-material-type="book" data-material-id="@book.Id">
-                                            <div class="d-flex w-100 justify-content-between">
-                                                <h6 class="mb-1">@book.Title</h6>
-                                                <small>@book.Author</small>
+                                        var isCompleted = Model.CompletedMaterialIds.Contains(book.Id);
+                                        <div class="list-group-item material-item @(isCompleted ? "list-group-item-success" : "")"
+                                             data-material-type="book" data-material-id="@book.Id">
+                                            <div class="d-flex w-100 justify-content-between align-items-start">
+                                                <div class="flex-grow-1" style="cursor: pointer;" onclick="loadMaterialDetails('book', @book.Id)">
+                                                    <div class="d-flex justify-content-between">
+                                                        <h6 class="mb-1">@book.Title</h6>
+                                                        <small>@book.Author</small>
+                                                    </div>
+                                                    <p class="mb-1">@book.PageAmount pages • @book.Formant</p>
+                                                    <small>Published: @book.PublicationDate.ToString("MMM yyyy")</small>
+                                                </div>
+                                                @if (Model.IsUserEnrolled)
+                                                {
+                                                    <div class="ms-3">
+                                                        @if (isCompleted)
+                                                        {
+                                                            <span class="badge bg-success">
+                                                                <i class="fas fa-check"></i> Completed
+                                                            </span>
+                                                        }
+                                                        else
+                                                        {
+                                                            <button class="btn btn-sm btn-outline-success mark-complete-btn"
+                                                                    onclick="markMaterialCompleted(@Model.Id, @book.Id, this)">
+                                                                <i class="fas fa-check"></i> Mark Complete
+                                                            </button>
+                                                        }
+                                                    </div>
+                                                }
                                             </div>
-                                            <p class="mb-1">@book.PageAmount pages • @book.Formant</p>
-                                            <small>Published: @book.PublicationDate.ToString("MMM yyyy")</small>
-                                        </button>
+                                        </div>
                                     }
                                 </div>
                             }
@@ -112,14 +191,37 @@
                                 <div class="list-group">
                                     @foreach (var video in Model.Videos)
                                     {
-                                        <button type="button" class="list-group-item list-group-item-action material-item" 
-                                                data-material-type="video" data-material-id="@video.Id">
-                                            <div class="d-flex w-100 justify-content-between">
-                                                <h6 class="mb-1">@video.Title</h6>
-                                                <small>@video.Duration min</small>
+                                        var isCompleted = Model.CompletedMaterialIds.Contains(video.Id);
+                                        <div class="list-group-item material-item @(isCompleted ? "list-group-item-success" : "")"
+                                             data-material-type="video" data-material-id="@video.Id">
+                                            <div class="d-flex w-100 justify-content-between align-items-start">
+                                                <div class="flex-grow-1" style="cursor: pointer;" onclick="loadMaterialDetails('video', @video.Id)">
+                                                    <div class="d-flex justify-content-between">
+                                                        <h6 class="mb-1">@video.Title</h6>
+                                                        <small>@video.Duration min</small>
+                                                    </div>
+                                                    <p class="mb-1">Quality: @video.Quality</p>
+                                                </div>
+                                                @if (Model.IsUserEnrolled)
+                                                {
+                                                    <div class="ms-3">
+                                                        @if (isCompleted)
+                                                        {
+                                                            <span class="badge bg-success">
+                                                                <i class="fas fa-check"></i> Completed
+                                                            </span>
+                                                        }
+                                                        else
+                                                        {
+                                                            <button class="btn btn-sm btn-outline-success mark-complete-btn"
+                                                                    onclick="markMaterialCompleted(@Model.Id, @video.Id, this)">
+                                                                <i class="fas fa-check"></i> Mark Complete
+                                                            </button>
+                                                        }
+                                                    </div>
+                                                }
                                             </div>
-                                            <p class="mb-1">Quality: @video.Quality</p>
-                                        </button>
+                                        </div>
                                     }
                                 </div>
                             }
@@ -147,14 +249,37 @@
                                 <div class="list-group">
                                     @foreach (var article in Model.Articles)
                                     {
-                                        <button type="button" class="list-group-item list-group-item-action material-item" 
-                                                data-material-type="article" data-material-id="@article.Id">
-                                            <div class="d-flex w-100 justify-content-between">
-                                                <h6 class="mb-1">@article.Title</h6>
-                                                <small>@article.Date.ToString("MMM yyyy")</small>
+                                        var isCompleted = Model.CompletedMaterialIds.Contains(article.Id);
+                                        <div class="list-group-item material-item @(isCompleted ? "list-group-item-success" : "")"
+                                             data-material-type="article" data-material-id="@article.Id">
+                                            <div class="d-flex w-100 justify-content-between align-items-start">
+                                                <div class="flex-grow-1" style="cursor: pointer;" onclick="loadMaterialDetails('article', @article.Id)">
+                                                    <div class="d-flex justify-content-between">
+                                                        <h6 class="mb-1">@article.Title</h6>
+                                                        <small>@article.Date.ToString("MMM yyyy")</small>
+                                                    </div>
+                                                    <p class="mb-1">@article.Resource</p>
+                                                </div>
+                                                @if (Model.IsUserEnrolled)
+                                                {
+                                                    <div class="ms-3">
+                                                        @if (isCompleted)
+                                                        {
+                                                            <span class="badge bg-success">
+                                                                <i class="fas fa-check"></i> Completed
+                                                            </span>
+                                                        }
+                                                        else
+                                                        {
+                                                            <button class="btn btn-sm btn-outline-success mark-complete-btn"
+                                                                    onclick="markMaterialCompleted(@Model.Id, @article.Id, this)">
+                                                                <i class="fas fa-check"></i> Mark Complete
+                                                            </button>
+                                                        }
+                                                    </div>
+                                                }
                                             </div>
-                                            <p class="mb-1">@article.Resource</p>
-                                        </button>
+                                        </div>
                                     }
                                 </div>
                             }
@@ -196,33 +321,130 @@
 
 @section Scripts {
     <script>
-        $(document).ready(function() {
-            $('.material-item').click(function() {
-                const materialType = $(this).data('material-type');
-                const materialId = $(this).data('material-id');
-                
-                // Remove active class from all items
-                $('.material-item').removeClass('active');
-                // Add active class to clicked item
-                $(this).addClass('active');
-                
-                // Load material details via AJAX
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.material-item [onclick*="loadMaterialDetails"]').forEach(el => {
+            el.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const materialItem = this.closest('.material-item');
+                const materialType = materialItem.dataset.materialType;
+                const materialId = materialItem.dataset.materialId;
+                document.querySelectorAll('.material-item').forEach(mi => mi.classList.remove('active'));
+                materialItem.classList.add('active');
                 loadMaterialDetails(materialType, materialId);
             });
         });
+    });
+
+    function loadMaterialDetails(materialType, materialId) {
+        const url = '@Url.Action("GetMaterialDetails", "Courses")' + `?materialType=${encodeURIComponent(materialType)}&materialId=${encodeURIComponent(materialId)}`;
         
-        function loadMaterialDetails(materialType, materialId) {
-            $.ajax({
-                url: '@Url.Action("GetMaterialDetails", "Courses")',
-                type: 'GET',
-                data: { materialType: materialType, materialId: materialId },
-                success: function(data) {
-                    $('#materialDetailsPanel').html(data);
-                },
-                error: function() {
-                    $('#materialDetailsPanel').html('<div class="alert alert-danger">Error loading material details.</div>');
-                }
+        fetch(url)
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('materialDetailsPanel').innerHTML = data;
+            })
+            .catch(() => {
+                document.getElementById('materialDetailsPanel').innerHTML = '<div class="alert alert-danger">Error loading material details.</div>';
             });
+    }
+
+    function enrollInCourse(courseId) {
+        const enrollBtn = document.getElementById('enrollBtn');
+        const originalText = enrollBtn.innerHTML;
+
+        enrollBtn.disabled = true;
+        enrollBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Enrolling...';
+
+        const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+        fetch('@Url.Action("Enroll", "Courses")', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: courseId, __RequestVerificationToken: token })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                enrollBtn.parentNode.innerHTML = `<div class="alert alert-success" role="alert"><i class="fas fa-check-circle me-2"></i>${data.message}</div>`;
+            } else {
+                alert('Error: ' + data.message);
+                enrollBtn.disabled = false;
+                enrollBtn.innerHTML = originalText;
+            }
+        })
+        .catch(() => {
+            alert('An error occurred while enrolling in the course. Please try again.');
+            enrollBtn.disabled = false;
+            enrollBtn.innerHTML = originalText;
+        });
+    }
+
+    function markMaterialCompleted(courseId, materialId, button) {
+        const btn = button;
+        const originalText = btn.innerHTML;
+
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Marking...';
+
+        const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+        fetch('@Url.Action("MarkMaterialCompleted", "Courses")', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ courseId: courseId, materialId: materialId, __RequestVerificationToken: token })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const parent = btn.closest('.ms-3');
+                parent.innerHTML = '<span class="badge bg-success"><i class="fas fa-check"></i> Completed</span>';
+                btn.closest('.material-item').classList.add('list-group-item-success');
+                updateProgressBar(data.newProgress);
+                showToast('success', data.message);
+            } else {
+                showToast('error', data.message);
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            }
+        })
+        .catch(() => {
+            showToast('error', 'An error occurred while marking the material as completed.');
+            btn.disabled = false;
+            btn.innerHTML = originalText;
+        });
+    }
+
+    function updateProgressBar(newProgress) {
+        const progressBar = document.getElementById('progressBar');
+        const progressText = document.getElementById('progressText');
+
+        progressBar.style.width = newProgress + '%';
+        progressBar.setAttribute('aria-valuenow', newProgress);
+        progressText.textContent = newProgress + '%';
+
+        if (newProgress === 100) {
+            progressBar.classList.remove('bg-success');
+            progressBar.classList.add('bg-warning');
+            showToast('success', '🎉 Congratulations! You\'ve completed this course and earned new skills!');
+            setTimeout(() => {
+                progressBar.classList.add('animate__animated', 'animate__pulse');
+            }, 500);
         }
+    }
+
+    function showToast(type, message) {
+        const alertClass = type === 'success' ? 'alert-success' : 'alert-danger';
+        const toast = document.createElement('div');
+        toast.className = `alert ${alertClass} alert-dismissible fade show position-fixed`;
+        toast.style = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+        toast.setAttribute('role', 'alert');
+        toast.innerHTML = `
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        document.body.appendChild(toast);
+
+        setTimeout(() => {
+            toast.remove();
+        }, 5000);
+    }
     </script>
 }

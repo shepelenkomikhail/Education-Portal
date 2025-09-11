@@ -21,4 +21,6 @@ public class User : IdentityUser<int>, IBaseEntity<int>
     
     public virtual ICollection<UserSkill> UserSkills { get; set; } = new HashSet<UserSkill>();
     public virtual ICollection<UserCourse> UserCourses { get; set; } = new HashSet<UserCourse>();
+    public virtual ICollection<UserMaterial> UserMaterials { get; set; } = new HashSet<UserMaterial>();
+    public virtual ICollection<Course> CreatedCourses { get; set; } = new HashSet<Course>();
 }
