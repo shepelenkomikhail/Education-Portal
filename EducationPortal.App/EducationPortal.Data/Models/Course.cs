@@ -16,7 +16,13 @@ public class Course : BaseEntity<int>
     [Required]
     [StringLength(3000)]
     public string Description { get; set; } = string.Empty;
-    
+
+    public int? CreatedByUserId { get; set; }
+    [ForeignKey(nameof(CreatedByUserId))]
+    public virtual User? CreatedBy { get; set; }
+
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
     public virtual ICollection<Material> Materials { get; set; } = new HashSet<Material>();
     public virtual ICollection<Skill> Skills { get; set; } = new HashSet<Skill>();
     public virtual ICollection<UserCourse> UserCourses { get; set; } = new HashSet<UserCourse>();

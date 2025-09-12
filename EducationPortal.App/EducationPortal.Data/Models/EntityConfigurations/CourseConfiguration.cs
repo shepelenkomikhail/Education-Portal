@@ -7,6 +7,10 @@ public class CourseConfiguration : IEntityTypeConfiguration<Course>
 {
     public void Configure(EntityTypeBuilder<Course> builder)
     {
+        builder.HasOne(c => c.CreatedBy)
+            .WithMany(u => u.CreatedCourses)
+            .OnDelete(DeleteBehavior.SetNull);
+        
         builder.HasData(
             new Course
             {
