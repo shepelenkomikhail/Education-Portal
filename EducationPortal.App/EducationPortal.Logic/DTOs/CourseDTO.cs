@@ -7,6 +7,8 @@ public class CourseDTO
     public int Id { get; set; }
     public string Name { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
+    public int? CreatedByUserId { get; set; }
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     
     public CourseDTO(){}
 
@@ -17,10 +19,18 @@ public class CourseDTO
         Id = course.Id;
         Name = course.Name;
         Description = course.Description;
+        CreatedByUserId = course.CreatedByUserId;
+        CreatedAt = course.CreatedAt;
     }
 
     internal Course ToCourse()
     {
-        return new Course() { Id = this.Id, Name = this.Name, Description = this.Description };
+        return new Course() {
+            Id = this.Id,
+            Name = this.Name,
+            Description = this.Description,
+            CreatedByUserId = this.CreatedByUserId,
+            CreatedAt = this.CreatedAt
+        };
     }
 }
