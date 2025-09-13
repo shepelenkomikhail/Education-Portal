@@ -7,10 +7,6 @@ namespace EducationPortal.Data.Models;
 
 public class User : IdentityUser<int>, IBaseEntity<int>
 {
-    [Key]
-    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public int Id { get; set; }
-
     [Required]
     [StringLength(50)]
     public string FirstName { get; set; } = string.Empty;

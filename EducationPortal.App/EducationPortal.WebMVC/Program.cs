@@ -6,12 +6,13 @@ using EducationPortal.Data.Repo.RepositoryInterfaces;
 using EducationPortal.Logic.Interfaces;
 using EducationPortal.Logic.Services;
 using Microsoft.AspNetCore.DataProtection;
+using EducationPortal.WebMVC.Services;
 
 namespace EducationPortal.WebMVC;
 
-public class Program
+public partial class Program
 {
-    public static void Main(string[] args)
+    public static async Task Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
         
@@ -52,12 +53,17 @@ public class Program
         builder.Services.AddScoped<IMaterialService, MaterialService>();
         builder.Services.AddScoped<ISkillService, SkillService>();
 
+        builder.Services.AddScoped<AdminInitializationService>();
+
         var app = builder.Build();
 
         using (var scope = app.Services.CreateScope())
         {
             var db = scope.ServiceProvider.GetRequiredService<PortalDbContext>();
             db.Database.Migrate();
+            
+            var adminService = scope.ServiceProvider.GetRequiredService<AdminInitializationService>();
+            await adminService.InitializeAdminAsync();
         }
         
         if (app.Environment.IsDevelopment())
