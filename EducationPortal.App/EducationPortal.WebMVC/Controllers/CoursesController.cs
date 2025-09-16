@@ -12,16 +12,12 @@ namespace WebMVC.Controllers
     public class CoursesController : Controller
     {
         private readonly ICourseService courseService;
-        private readonly ISkillService skillService;
-        private readonly IMaterialService materialService;
         private readonly IUserService userService;
         private readonly UserManager<User> userManager;
 
-        public CoursesController(ICourseService courseService, IMaterialService materialService, ISkillService skillService, IUserService userService, UserManager<User> userManager)
+        public CoursesController(ICourseService courseService, IUserService userService, UserManager<User> userManager)
         {
             this.courseService = courseService;
-            this.materialService = materialService;
-            this.skillService = skillService;
             this.userService = userService;
             this.userManager = userManager;
         }

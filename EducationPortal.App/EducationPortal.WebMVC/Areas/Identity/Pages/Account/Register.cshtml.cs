@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 using EducationPortal.Data.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace EducationPortal.WebMVC.Areas.Identity.Pages.Account
 {
@@ -105,8 +106,24 @@ namespace EducationPortal.WebMVC.Areas.Identity.Pages.Account
         {
             returnUrl ??= Url.Content("~/");
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+
             if (ModelState.IsValid)
             {
+                var existingUser = await _userManager.FindByEmailAsync(Input.Email);
+                if (existingUser != null)
+                {
+                    ModelState.AddModelError("Input.Email", "This email is already taken.");
+                    return Page();
+                }
+                
+                var existingPhone = await _userManager.Users
+                    .FirstOrDefaultAsync(u => u.PhoneNumber == Input.PhoneNumber);
+                if (existingPhone != null)
+                {
+                    ModelState.AddModelError("Input.PhoneNumber", "This phone number is already in use.");
+                    return Page();
+                }
+
                 var user = CreateUser();
 
                 user.UserName = Input.Email;
@@ -121,6 +138,7 @@ namespace EducationPortal.WebMVC.Areas.Identity.Pages.Account
 
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
+
                 var result = await _userManager.CreateAsync(user, Input.Password);
 
                 if (result.Succeeded)
@@ -135,6 +153,7 @@ namespace EducationPortal.WebMVC.Areas.Identity.Pages.Account
                     }
                     return RedirectToPage("./Login", new { returnUrl = returnUrl });
                 }
+
                 foreach (var error in result.Errors)
                 {
                     ModelState.AddModelError(string.Empty, error.Description);

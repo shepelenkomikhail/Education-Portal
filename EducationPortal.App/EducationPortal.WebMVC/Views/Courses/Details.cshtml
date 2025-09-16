@@ -358,8 +358,10 @@
         const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
         fetch('@Url.Action("Enroll", "Courses")', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ id: courseId, __RequestVerificationToken: token })
+            headers: { 
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: `id=${courseId}&__RequestVerificationToken=${encodeURIComponent(token)}`
         })
         .then(response => response.json())
         .then(data => {
@@ -388,16 +390,36 @@
         const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
         fetch('@Url.Action("MarkMaterialCompleted", "Courses")', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ courseId: courseId, materialId: materialId, __RequestVerificationToken: token })
+            headers: { 
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: `courseId=${courseId}&materialId=${materialId}&__RequestVerificationToken=${encodeURIComponent(token)}`
         })
-        .then(response => response.json())
+        .then(response => {
+            console.log('MarkMaterialCompleted Response status:', response.status);
+            console.log('MarkMaterialCompleted Response headers:', response.headers);
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            return response.json();
+        })
         .then(data => {
-            if (data.success) {
-                const parent = btn.closest('.ms-3');
+            console.log('MarkMaterialCompleted Response data:', data);
+            if (data && data.success) {
+                const parent = btn.parentElement;
                 parent.innerHTML = '<span class="badge bg-success"><i class="fas fa-check"></i> Completed</span>';
-                btn.closest('.material-item').classList.add('list-group-item-success');
-                updateProgressBar(data.newProgress);
+                
+                const materialItem = btn.closest('.material-item');
+                if (materialItem) {
+                    materialItem.classList.add('list-group-item-success');
+                }
+                
+                if (data.newProgress !== undefined) {
+                    updateProgressBar(data.newProgress);
+                }
+                
                 showToast('success', data.message);
             } else {
                 showToast('error', data.message);
@@ -405,7 +427,8 @@
                 btn.innerHTML = originalText;
             }
         })
-        .catch(() => {
+        .catch(error => {
+            console.error('MarkMaterialCompleted Error:', error);
             showToast('error', 'An error occurred while marking the material as completed.');
             btn.disabled = false;
             btn.innerHTML = originalText;
@@ -416,17 +439,19 @@
         const progressBar = document.getElementById('progressBar');
         const progressText = document.getElementById('progressText');
 
-        progressBar.style.width = newProgress + '%';
-        progressBar.setAttribute('aria-valuenow', newProgress);
-        progressText.textContent = newProgress + '%';
+        if (progressBar && progressText) {
+            progressBar.style.width = newProgress + '%';
+            progressBar.setAttribute('aria-valuenow', newProgress);
+            progressText.textContent = newProgress + '%';
 
-        if (newProgress === 100) {
-            progressBar.classList.remove('bg-success');
-            progressBar.classList.add('bg-warning');
-            showToast('success', '🎉 Congratulations! You\'ve completed this course and earned new skills!');
-            setTimeout(() => {
-                progressBar.classList.add('animate__animated', 'animate__pulse');
-            }, 500);
+            if (newProgress === 100) {
+                progressBar.classList.remove('bg-success');
+                progressBar.classList.add('bg-warning');
+                showToast('success', '🎉 Congratulations! You\'ve completed this course and earned new skills!');
+                setTimeout(() => {
+                    progressBar.classList.add('animate__animated', 'animate__pulse');
+                }, 500);
+            }
         }
     }
 
@@ -434,17 +459,29 @@
         const alertClass = type === 'success' ? 'alert-success' : 'alert-danger';
         const toast = document.createElement('div');
         toast.className = `alert ${alertClass} alert-dismissible fade show position-fixed`;
-        toast.style = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+        toast.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
         toast.setAttribute('role', 'alert');
         toast.innerHTML = `
             ${message}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         `;
         document.body.appendChild(toast);
-
+        
         setTimeout(() => {
-            toast.remove();
+            if (toast && toast.parentNode) {
+                toast.remove();
+            }
         }, 5000);
+
+    
+        const closeBtn = toast.querySelector('.btn-close');
+        if (closeBtn) {
+            closeBtn.addEventListener('click', () => {
+                if (toast && toast.parentNode) {
+                    toast.remove();
+                }
+            });
+        }
     }
     </script>
 }

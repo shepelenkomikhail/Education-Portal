@@ -9,13 +9,11 @@ namespace EducationPortal.WebMVC.Controllers;
 
 public class HomeController : Controller
 {
-    private readonly ILogger<HomeController> logger;
     private readonly UserManager<User> userManager;
     private readonly IUserService userService;
 
-    public HomeController(ILogger<HomeController> logger, UserManager<User> userManager, IUserService userService)
+    public HomeController(UserManager<User> userManager, IUserService userService)
     {
-        this.logger = logger;
         this.userManager = userManager;
         this.userService = userService;
     }

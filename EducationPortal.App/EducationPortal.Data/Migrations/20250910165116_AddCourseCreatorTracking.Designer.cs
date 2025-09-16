@@ -3,6 +3,7 @@ using System;
 using EducationPortal.Data.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,16 +11,14 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EducationPortal.Data.Migrations
 {
     [DbContext(typeof(PortalDbContext))]
-    partial class PortalDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250910165116_AddCourseCreatorTracking")]
+    partial class AddCourseCreatorTracking
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.16")
-                .HasAnnotation("Proxies:ChangeTracking", false)
-                .HasAnnotation("Proxies:CheckEquality", false)
-                .HasAnnotation("Proxies:LazyLoading", true);
+            modelBuilder.HasAnnotation("ProductVersion", "8.0.20");
 
             modelBuilder.Entity("CourseMaterial", b =>
                 {
@@ -83,35 +82,35 @@ namespace EducationPortal.Data.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2025, 9, 13, 16, 50, 45, 68, DateTimeKind.Utc).AddTicks(7430),
+                            CreatedAt = new DateTime(2025, 9, 10, 16, 51, 16, 312, DateTimeKind.Utc).AddTicks(3190),
                             Description = "Learn the basics of C# programming language, including syntax, data types, and control structures.",
                             Name = "Introduction to C#"
                         },
                         new
                         {
                             Id = 2,
-                            CreatedAt = new DateTime(2025, 9, 13, 16, 50, 45, 68, DateTimeKind.Utc).AddTicks(7430),
+                            CreatedAt = new DateTime(2025, 9, 10, 16, 51, 16, 312, DateTimeKind.Utc).AddTicks(3190),
                             Description = "Build modern web applications using ASP.NET Core framework and Entity Framework.",
                             Name = "Web Development with ASP.NET Core"
                         },
                         new
                         {
                             Id = 3,
-                            CreatedAt = new DateTime(2025, 9, 13, 16, 50, 45, 68, DateTimeKind.Utc).AddTicks(7430),
+                            CreatedAt = new DateTime(2025, 9, 10, 16, 51, 16, 312, DateTimeKind.Utc).AddTicks(3190),
                             Description = "Master JavaScript basics, DOM manipulation, and modern ES6+ features.",
                             Name = "JavaScript Fundamentals"
                         },
                         new
                         {
                             Id = 4,
-                            CreatedAt = new DateTime(2025, 9, 13, 16, 50, 45, 68, DateTimeKind.Utc).AddTicks(7430),
+                            CreatedAt = new DateTime(2025, 9, 10, 16, 51, 16, 312, DateTimeKind.Utc).AddTicks(3190),
                             Description = "Learn database design principles and SQL querying techniques.",
                             Name = "Database Design with SQL"
                         },
                         new
                         {
                             Id = 5,
-                            CreatedAt = new DateTime(2025, 9, 13, 16, 50, 45, 68, DateTimeKind.Utc).AddTicks(7440),
+                            CreatedAt = new DateTime(2025, 9, 10, 16, 51, 16, 312, DateTimeKind.Utc).AddTicks(3190),
                             Description = "Build interactive user interfaces with React library and modern JavaScript.",
                             Name = "React for Beginners"
                         });
@@ -270,12 +269,28 @@ namespace EducationPortal.Data.Migrations
                     b.HasData(
                         new
                         {
+                            Id = 1,
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "5ab6b9d1-5dcc-4dac-bc07-7fb1899512f9",
+                            Email = "john.doe@email.com",
+                            EmailConfirmed = false,
+                            FirstName = "",
+                            LockoutEnabled = false,
+                            PasswordHash = "password123",
+                            PhoneNumber = "+1234567890",
+                            PhoneNumberConfirmed = false,
+                            Surname = "Doe",
+                            TwoFactorEnabled = false,
+                            UserName = "John"
+                        },
+                        new
+                        {
                             Id = 2,
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "27eb47d9-4276-400f-b65b-08e83776dc59",
+                            ConcurrencyStamp = "d3477f51-aaea-4e79-b698-43d180016cbb",
                             Email = "jane.smith@email.com",
                             EmailConfirmed = false,
-                            FirstName = "Jane",
+                            FirstName = "",
                             LockoutEnabled = false,
                             PasswordHash = "password123",
                             PhoneNumber = "+1234567891",
@@ -288,10 +303,10 @@ namespace EducationPortal.Data.Migrations
                         {
                             Id = 3,
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "58c463ea-3860-4044-b7f3-705bf43ee558",
+                            ConcurrencyStamp = "f2fec7a1-ef31-45d2-94ec-38d01f134b3d",
                             Email = "bob.johnson@email.com",
                             EmailConfirmed = false,
-                            FirstName = "Bob",
+                            FirstName = "",
                             LockoutEnabled = false,
                             PasswordHash = "password123",
                             PhoneNumber = "+1234567892",
@@ -304,10 +319,10 @@ namespace EducationPortal.Data.Migrations
                         {
                             Id = 4,
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "eb2190da-141a-461d-a04b-487d0fa85c5e",
+                            ConcurrencyStamp = "b2169f94-dbe3-4ab8-bab7-b360a837c77b",
                             Email = "alice.brown@email.com",
                             EmailConfirmed = false,
-                            FirstName = "Alice",
+                            FirstName = "",
                             LockoutEnabled = false,
                             PasswordHash = "password123",
                             PhoneNumber = "+1234567893",
@@ -320,10 +335,10 @@ namespace EducationPortal.Data.Migrations
                         {
                             Id = 5,
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "27736feb-0710-4d0e-af71-bf044fedba44",
+                            ConcurrencyStamp = "2e6f5cda-4121-4a5a-812a-57d46f2ba520",
                             Email = "charlie.wilson@email.com",
                             EmailConfirmed = false,
-                            FirstName = "Charlie",
+                            FirstName = "",
                             LockoutEnabled = false,
                             PasswordHash = "password123",
                             PhoneNumber = "+1234567894",
@@ -557,22 +572,6 @@ namespace EducationPortal.Data.Migrations
                         .HasDatabaseName("RoleNameIndex");
 
                     b.ToTable("AspNetRoles", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            ConcurrencyStamp = "9a829f9b-43cf-435b-88a7-c997bbbe92ab",
-                            Name = "Admin",
-                            NormalizedName = "ADMIN"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            ConcurrencyStamp = "c3ce4f28-8c7b-4c67-927d-a3c3ae08c778",
-                            Name = "User",
-                            NormalizedName = "USER"
-                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>

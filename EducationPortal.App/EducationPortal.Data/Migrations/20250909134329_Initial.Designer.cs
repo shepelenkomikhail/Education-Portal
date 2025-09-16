@@ -3,6 +3,7 @@ using System;
 using EducationPortal.Data.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EducationPortal.Data.Migrations
 {
     [DbContext(typeof(PortalDbContext))]
-    partial class PortalDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250909134329_Initial")]
+    partial class Initial
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -57,12 +60,6 @@ namespace EducationPortal.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("TEXT");
-
-                    b.Property<int?>("CreatedByUserId")
-                        .HasColumnType("INTEGER");
-
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasMaxLength(3000)
@@ -75,43 +72,36 @@ namespace EducationPortal.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CreatedByUserId");
-
                     b.ToTable("Courses");
 
                     b.HasData(
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2025, 9, 13, 16, 50, 45, 68, DateTimeKind.Utc).AddTicks(7430),
                             Description = "Learn the basics of C# programming language, including syntax, data types, and control structures.",
                             Name = "Introduction to C#"
                         },
                         new
                         {
                             Id = 2,
-                            CreatedAt = new DateTime(2025, 9, 13, 16, 50, 45, 68, DateTimeKind.Utc).AddTicks(7430),
                             Description = "Build modern web applications using ASP.NET Core framework and Entity Framework.",
                             Name = "Web Development with ASP.NET Core"
                         },
                         new
                         {
                             Id = 3,
-                            CreatedAt = new DateTime(2025, 9, 13, 16, 50, 45, 68, DateTimeKind.Utc).AddTicks(7430),
                             Description = "Master JavaScript basics, DOM manipulation, and modern ES6+ features.",
                             Name = "JavaScript Fundamentals"
                         },
                         new
                         {
                             Id = 4,
-                            CreatedAt = new DateTime(2025, 9, 13, 16, 50, 45, 68, DateTimeKind.Utc).AddTicks(7430),
                             Description = "Learn database design principles and SQL querying techniques.",
                             Name = "Database Design with SQL"
                         },
                         new
                         {
                             Id = 5,
-                            CreatedAt = new DateTime(2025, 9, 13, 16, 50, 45, 68, DateTimeKind.Utc).AddTicks(7440),
                             Description = "Build interactive user interfaces with React library and modern JavaScript.",
                             Name = "React for Beginners"
                         });
@@ -213,11 +203,6 @@ namespace EducationPortal.Data.Migrations
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("TEXT");
-
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("INTEGER");
 
@@ -270,12 +255,26 @@ namespace EducationPortal.Data.Migrations
                     b.HasData(
                         new
                         {
+                            Id = 1,
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "a649e921-fd65-4a05-b254-506dafc0c58f",
+                            Email = "john.doe@email.com",
+                            EmailConfirmed = false,
+                            LockoutEnabled = false,
+                            PasswordHash = "password123",
+                            PhoneNumber = "+1234567890",
+                            PhoneNumberConfirmed = false,
+                            Surname = "Doe",
+                            TwoFactorEnabled = false,
+                            UserName = "John"
+                        },
+                        new
+                        {
                             Id = 2,
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "27eb47d9-4276-400f-b65b-08e83776dc59",
+                            ConcurrencyStamp = "a6e3eddf-e78a-4981-9be5-0bad29aab542",
                             Email = "jane.smith@email.com",
                             EmailConfirmed = false,
-                            FirstName = "Jane",
                             LockoutEnabled = false,
                             PasswordHash = "password123",
                             PhoneNumber = "+1234567891",
@@ -288,10 +287,9 @@ namespace EducationPortal.Data.Migrations
                         {
                             Id = 3,
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "58c463ea-3860-4044-b7f3-705bf43ee558",
+                            ConcurrencyStamp = "ff9c4c1d-e841-481e-b9a8-a3c85281b686",
                             Email = "bob.johnson@email.com",
                             EmailConfirmed = false,
-                            FirstName = "Bob",
                             LockoutEnabled = false,
                             PasswordHash = "password123",
                             PhoneNumber = "+1234567892",
@@ -304,10 +302,9 @@ namespace EducationPortal.Data.Migrations
                         {
                             Id = 4,
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "eb2190da-141a-461d-a04b-487d0fa85c5e",
+                            ConcurrencyStamp = "62a38f32-83b3-4216-95e4-68cffb9e9691",
                             Email = "alice.brown@email.com",
                             EmailConfirmed = false,
-                            FirstName = "Alice",
                             LockoutEnabled = false,
                             PasswordHash = "password123",
                             PhoneNumber = "+1234567893",
@@ -320,10 +317,9 @@ namespace EducationPortal.Data.Migrations
                         {
                             Id = 5,
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "27736feb-0710-4d0e-af71-bf044fedba44",
+                            ConcurrencyStamp = "a8fb17d3-17ae-45af-bf80-38fac26b02ec",
                             Email = "charlie.wilson@email.com",
                             EmailConfirmed = false,
-                            FirstName = "Charlie",
                             LockoutEnabled = false,
                             PasswordHash = "password123",
                             PhoneNumber = "+1234567894",
@@ -412,27 +408,6 @@ namespace EducationPortal.Data.Migrations
                             CourseId = 5,
                             CompletionPercentage = 0
                         });
-                });
-
-            modelBuilder.Entity("EducationPortal.Data.Models.UserMaterial", b =>
-                {
-                    b.Property<int>("UserId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("MaterialId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<DateTime>("CompletedAt")
-                        .HasColumnType("TEXT");
-
-                    b.Property<bool>("IsCompleted")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("UserId", "MaterialId");
-
-                    b.HasIndex("MaterialId");
-
-                    b.ToTable("UserMaterials");
                 });
 
             modelBuilder.Entity("EducationPortal.Data.Models.UserSkill", b =>
@@ -557,22 +532,6 @@ namespace EducationPortal.Data.Migrations
                         .HasDatabaseName("RoleNameIndex");
 
                     b.ToTable("AspNetRoles", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            ConcurrencyStamp = "9a829f9b-43cf-435b-88a7-c997bbbe92ab",
-                            Name = "Admin",
-                            NormalizedName = "ADMIN"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            ConcurrencyStamp = "c3ce4f28-8c7b-4c67-927d-a3c3ae08c778",
-                            Name = "User",
-                            NormalizedName = "USER"
-                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
@@ -827,16 +786,6 @@ namespace EducationPortal.Data.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("EducationPortal.Data.Models.Course", b =>
-                {
-                    b.HasOne("EducationPortal.Data.Models.User", "CreatedBy")
-                        .WithMany("CreatedCourses")
-                        .HasForeignKey("CreatedByUserId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
-                    b.Navigation("CreatedBy");
-                });
-
             modelBuilder.Entity("EducationPortal.Data.Models.UserCourse", b =>
                 {
                     b.HasOne("EducationPortal.Data.Models.Course", "Course")
@@ -852,25 +801,6 @@ namespace EducationPortal.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Course");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("EducationPortal.Data.Models.UserMaterial", b =>
-                {
-                    b.HasOne("EducationPortal.Data.Models.Material", "Material")
-                        .WithMany("UserMaterials")
-                        .HasForeignKey("MaterialId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("EducationPortal.Data.Models.User", "User")
-                        .WithMany("UserMaterials")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Material");
 
                     b.Navigation("User");
                 });
@@ -977,11 +907,6 @@ namespace EducationPortal.Data.Migrations
                     b.Navigation("UserCourses");
                 });
 
-            modelBuilder.Entity("EducationPortal.Data.Models.Material", b =>
-                {
-                    b.Navigation("UserMaterials");
-                });
-
             modelBuilder.Entity("EducationPortal.Data.Models.Skill", b =>
                 {
                     b.Navigation("UserSkills");
@@ -989,11 +914,7 @@ namespace EducationPortal.Data.Migrations
 
             modelBuilder.Entity("EducationPortal.Data.Models.User", b =>
                 {
-                    b.Navigation("CreatedCourses");
-
                     b.Navigation("UserCourses");
-
-                    b.Navigation("UserMaterials");
 
                     b.Navigation("UserSkills");
                 });
