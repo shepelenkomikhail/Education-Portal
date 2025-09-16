@@ -19,6 +19,14 @@ public class UserService: IUserService
     
     public async Task<bool> InsertAsync(UserDTO user)
     {
+        var existingUser = await unitOfWork.Repository<User, int>()
+            .GetSingleOrDefaultAsync(u => u.Email == user.Email || u.PhoneNumber == user.PhoneNumber);
+
+        if (existingUser != null)
+        {
+            return false;
+        }
+
         var userEntity = new User()
         {
             UserName = user.UserName,

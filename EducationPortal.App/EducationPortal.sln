@@ -8,6 +8,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EducationPortal.Repo", "Edu
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EducationPortal.WebMVC", "EducationPortal.WebMVC\EducationPortal.WebMVC.csproj", "{D0134BF8-C1B1-474B-9324-0EF6752492E0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EducationaPortal.Logic.Tests", "EducationaPortal.Logic.Tests\EducationaPortal.Logic.Tests.csproj", "{7CEEBBC9-B54D-44DA-8A47-62112E4CD73B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,5 +32,9 @@ Global
 		{D0134BF8-C1B1-474B-9324-0EF6752492E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D0134BF8-C1B1-474B-9324-0EF6752492E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D0134BF8-C1B1-474B-9324-0EF6752492E0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7CEEBBC9-B54D-44DA-8A47-62112E4CD73B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7CEEBBC9-B54D-44DA-8A47-62112E4CD73B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7CEEBBC9-B54D-44DA-8A47-62112E4CD73B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7CEEBBC9-B54D-44DA-8A47-62112E4CD73B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
