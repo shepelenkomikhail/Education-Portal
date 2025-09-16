@@ -29,12 +29,12 @@ public class AdminInitializationService
                 _logger.LogInformation("Admin role created successfully.");
             }
 
-            var adminUser = await _userManager.FindByNameAsync("admin");
+            var adminUser = await _userManager.FindByNameAsync("admin@educationportal.com");
             if (adminUser == null)
             {
                 adminUser = new User
                 {
-                    UserName = "admin",
+                    UserName = "admin@educationportal.com",
                     Email = "admin@educationportal.com",
                     FirstName = "Admin",
                     Surname = "User",
@@ -46,11 +46,11 @@ public class AdminInitializationService
                 
                 if (result.Succeeded)
                 {
-                    adminUser = await _userManager.FindByNameAsync("admin");
+                    adminUser = await _userManager.FindByNameAsync("admin@educationportal.com");
                     if (adminUser != null)
                     {
                         await _userManager.AddToRoleAsync(adminUser, "Admin");
-                        _logger.LogInformation("Admin user created successfully with username: admin and password: Admin123!");
+                        _logger.LogInformation("Admin user created successfully with username: admin@educationportal.com and password: Admin123!");
                     }
                 }
                 else
