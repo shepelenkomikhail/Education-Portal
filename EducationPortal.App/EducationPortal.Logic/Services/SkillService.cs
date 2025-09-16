@@ -54,6 +54,4 @@ public class SkillService: ISkillService
         var skills = await unitOfWork.Repository<Skill, int>().GetWhereAsync(s => true);
         return skills.Select(s => new SkillDTO(s)).ToList();
     }
-
-
 }

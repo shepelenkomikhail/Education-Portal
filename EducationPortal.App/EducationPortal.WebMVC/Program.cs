@@ -43,7 +43,7 @@ public class Program
             .AddEntityFrameworkStores<PortalDbContext>()
             .AddDefaultTokenProviders()
             .AddDefaultUI();
-        builder.Services.AddScoped<IUserClaimsPrincipalFactory<User>, Services.CustomUserClaimsPrincipalFactory>();
+        builder.Services.AddScoped<IUserClaimsPrincipalFactory<User>, CustomUserClaimsPrincipalFactory>();
         
         builder.Services.AddScoped<IRepositoryFactory, RepositoryFactory>();
         builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();

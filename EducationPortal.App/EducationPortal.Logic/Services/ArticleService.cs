@@ -56,6 +56,4 @@ public class ArticleService: IArticleService
             .GetWhereAsync(a => true);
         return articles.Select(a => new ArticleDTO(a)).ToList();
     }
-
-
 }
