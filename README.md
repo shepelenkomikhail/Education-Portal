@@ -1,93 +1,223 @@
 # EducationPortal
 
+A comprehensive learning management system built with ASP.NET Core MVC that enables users to create, manage, and take courses with various learning materials.
 
+## 🚀 Features
 
-## Getting started
+### Core Functionality
+- **Course Management**: Create, edit, and manage educational courses
+- **User Authentication**: Secure user registration and login with ASP.NET Core Identity
+- **Role-based Access Control**: Admin and regular user roles with different permissions
+- **Learning Materials**: Support for multiple material types (Books, Videos, Articles)
+- **Skill Tracking**: Track and manage user skills and course completion
+- **Progress Monitoring**: Real-time course progress tracking and completion status
+- **Dashboard**: Personalized user dashboard with course statistics
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+### Material Types
+- **Books**: Author, page count, format, publication date
+- **Videos**: Duration, quality settings
+- **Articles**: Publication date, source/resource information
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+### User Experience
+- **Course Enrollment**: Easy course enrollment for students
+- **Progress Tracking**: Visual progress indicators and completion percentages
+- **Material Completion**: Mark materials as completed to track progress
+- **Skill Acquisition**: Automatic skill assignment upon course completion
 
-## Add your files
+## 🏗️ Architecture
 
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/topics/git/add_files/#add-files-to-a-git-repository) or push an existing Git repository with the following command:
+The project follows a clean architecture pattern with clear separation of concerns:
 
+### Project Structure
 ```
-cd existing_repo
-git remote add origin https://gitlab.ldc.nixs.com/trainee/dotnet/net-7/mykhailo-shepelenko/educationportal.git
-git branch -M main
-git push -uf origin main
+EducationPortal.App/
+├── EducationPortal.Data/          # Data Access Layer
+│   ├── Models/                    # Entity models and DbContext
+│   └── Migrations/               # Entity Framework migrations
+├── EducationPortal.Logic/         # Business Logic Layer
+│   ├── Services/                 # Business logic services
+│   ├── Interfaces/               # Service interfaces
+│   └── DTOs/                     # Data Transfer Objects
+├── EducationPortal.Repo/          # Repository Pattern
+│   └── Repositories/              # Data access repositories
+├── EducationPortal.WebMVC/        # Presentation Layer
+│   ├── Controllers/              # MVC Controllers
+│   ├── Views/                    # Razor views
+│   └── Models/                   # View models
+└── EducationaPortal.Logic.Tests/   # Unit Tests
 ```
 
-## Integrate with your tools
+### Key Components
 
-- [ ] [Set up project integrations](https://gitlab.ldc.nixs.com/trainee/dotnet/net-7/mykhailo-shepelenko/educationportal/-/settings/integrations)
+#### Data Layer
+- **Entity Framework Core** with SQLite database
+- **Identity Framework** for user management
+- **Repository Pattern** for data access abstraction
+- **Unit of Work** pattern for transaction management
 
-## Collaborate with your team
+#### Business Logic Layer
+- **Service Layer** with dependency injection
+- **DTO Pattern** for data transfer
+- **Interface-based design** for testability
 
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/user/project/merge_requests/auto_merge/)
+#### Presentation Layer
+- **ASP.NET Core MVC** with Razor views
+- **Bootstrap** for responsive UI
+- **AJAX** for dynamic content loading
+- **Role-based authorization**
 
-## Test and Deploy
+## 🛠️ Technology Stack
 
-Use the built-in continuous integration in GitLab.
+- **.NET 8.0** - Latest .NET framework
+- **ASP.NET Core MVC** - Web application framework
+- **Entity Framework Core** - ORM for database operations
+- **SQLite** - Lightweight database
+- **ASP.NET Core Identity** - Authentication and authorization
+- **Bootstrap 5** - Frontend CSS framework
+- **xUnit** - Unit testing framework
+- **Moq** - Mocking framework for tests
 
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
+## 📋 Prerequisites
 
-***
+- .NET 8.0 SDK
+- Visual Studio 2022 or VS Code
+- Git
 
-# Editing this README
+## 🚀 Getting Started
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
+### 1. Clone the Repository
+```bash
+git clone <repository-url>
+cd educationportal/EducationPortal.App
+```
 
-## Suggestions for a good README
+### 2. Restore Dependencies
+```bash
+dotnet restore
+```
 
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
+### 3. Update Database
+```bash
+dotnet ef database update --project EducationPortal.Data --startup-project EducationPortal.WebMVC
+```
 
-## Name
-Choose a self-explaining name for your project.
+### 4. Run the Application
+```bash
+dotnet run --project EducationPortal.WebMVC
+```
 
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
+The application will be available at `https://localhost:5195`
 
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
+## 🗄️ Database Schema
 
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+### Core Entities
+- **Users**: User accounts with authentication
+- **Courses**: Educational courses with descriptions
+- **Skills**: Skills that can be learned
+- **Materials**: Learning materials (Books, Videos, Articles)
+- **UserCourses**: Many-to-many relationship for course enrollment
+- **UserSkills**: User skill tracking
+- **UserMaterials**: Material completion tracking
 
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+### Key Relationships
+- Users can create multiple courses
+- Courses contain multiple materials and skills
+- Users can enroll in multiple courses
+- Users can complete materials and acquire skills
 
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
+## 🧪 Testing
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+The project includes comprehensive unit tests covering:
+- Service layer functionality
+- Repository operations
+- Business logic validation
+- Data access patterns
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+### Running Tests
+```bash
+dotnet test
+```
 
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
+## 🔧 Configuration
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
+### Database Connection
+The application uses SQLite by default. Connection string is configured in `appsettings.json`:
 
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
+```json
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "DataSource=EducationPortal.db;Cache=Shared"
+  }
+}
+```
 
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
+### Identity Configuration
+- Password requirements are configured for development
+- Email confirmation is disabled for easier testing
+- Admin user is automatically created on first run
 
-## License
-For open source projects, say how it is licensed.
+## 📱 User Interface
 
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+### Key Pages
+- **Home/Dashboard**: User overview with enrolled courses and progress
+- **Courses Index**: Browse all available courses
+- **Course Details**: View course content, materials, and skills
+- **Course Creation**: Create new courses with materials and skills
+- **Course Editing**: Modify existing courses (creator/admin only)
+
+### Responsive Design
+- Mobile-friendly Bootstrap layout
+- Dynamic content loading with AJAX
+- Progress indicators and completion tracking
+- Material type-specific detail views
+
+## 🔐 Security Features
+
+- **Authentication**: ASP.NET Core Identity
+- **Authorization**: Role-based access control
+- **Data Protection**: Built-in data protection keys
+- **CSRF Protection**: Anti-forgery tokens
+- **Input Validation**: Model validation and sanitization
+
+## 🚀 Deployment
+
+### Development
+```bash
+dotnet run --project EducationPortal.WebMVC --environment Development
+```
+
+### Production
+1. Update connection strings for production database
+2. Configure HTTPS certificates
+3. Set up proper logging
+4. Deploy to your preferred hosting platform
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests for new functionality
+5. Submit a pull request
+
+## 📄 License
+
+This project is part of a learning exercise and is available for educational purposes.
+
+## 🎯 Future Enhancements
+
+- [ ] Course categories and tags
+- [ ] Advanced search and filtering
+- [ ] Course ratings and reviews
+- [ ] Certificate generation
+- [ ] Email notifications
+- [ ] Video streaming capabilities
+- [ ] Advanced analytics and reporting
+
+## 📞 Support
+
+For questions or support, please open an issue in the repository.
+
+---
+
+**Built with ❤️ using ASP.NET Core and Entity Framework**
